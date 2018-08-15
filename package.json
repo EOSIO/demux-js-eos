@@ -1,0 +1,34 @@
+{
+  "name": "demux-eos",
+  "version": "0.0.1",
+  "description": "Demux-js Action Reader implementations for EOSIO blockchains",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": "https://github.com/EOSIO/demux-js-eos",
+  "author": {
+    "name": "Julien Heller",
+    "url": "https://block.one/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^23.1.4",
+    "@types/node": "^10.5.1",
+    "@types/request-promise-native": "^1.0.15",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "jest": "^22.4.3",
+    "ts-jest": "^23.0.0",
+    "tslint": "^5.10.0",
+    "tslint-eslint-rules": "^5.3.1",
+    "typedoc": "^0.11.1",
+    "typescript": "^2.9.2"
+  },
+  "peerDependencies": {
+    "demux-js": "0.0.1-docs"
+  },
+  "dependencies": {
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5"
+  }
+}
