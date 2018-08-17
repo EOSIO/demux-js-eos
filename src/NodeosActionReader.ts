@@ -1,8 +1,6 @@
-import { readers } from "demux-js"
+import { AbstractActionReader } from "demux-js"
 import { NodeosBlock } from "./NodeosBlock"
 import request from "request-promise-native"
-
-export const { AbstractActionReader } = readers
 
 /**
  * Reads from an EOSIO nodeos node to get blocks of actions.
