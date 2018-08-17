@@ -1,6 +1,6 @@
 {
   "name": "demux-eos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Demux-js Action Reader implementations for EOSIO blockchains",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,12 +26,12 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux-js": "^1.0.2",
+    "demux": "^1.0.3",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "peerDependencies": {
-    "demux-js": "^1.0.2"
+    "demux": "^1.0.3"
   },
   "scripts": {
     "release": "release-it",
