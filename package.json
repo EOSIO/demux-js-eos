@@ -1,6 +1,6 @@
 {
   "name": "demux-eos",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "Demux-js Action Reader implementations for EOSIO blockchains",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,6 @@
     "@types/jest": "^23.1.4",
     "@types/node": "^10.5.1",
     "@types/request-promise-native": "^1.0.15",
-    "demux-js": "0.0.1-docs",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "12.1.0",
     "eslint-plugin-import": "^2.7.0",
@@ -26,12 +25,13 @@
     "typedoc": "^0.11.1",
     "typescript": "^2.9.2"
   },
-  "peerDependencies": {
-    "demux-js": "0.0.1-docs"
-  },
   "dependencies": {
+    "demux": "^1.0.3",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
+  },
+  "peerDependencies": {
+    "demux": "^1.0.3"
   },
   "scripts": {
     "release": "release-it",
@@ -40,5 +40,22 @@
     "lint": "tslint -c tslint.json src/**/*.ts",
     "test": "jest",
     "build-docs": "./build-docs.sh"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(tsx?)$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "testRegex": "(/src/.*(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testEnvironment": "node"
   }
 }
