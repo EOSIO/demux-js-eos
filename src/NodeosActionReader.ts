@@ -1,6 +1,6 @@
 import { AbstractActionReader } from "demux"
-import { NodeosBlock } from "./NodeosBlock"
 import request from "request-promise-native"
+import { NodeosBlock } from "./NodeosBlock"
 
 /**
  * Reads from an EOSIO nodeos node to get blocks of actions.

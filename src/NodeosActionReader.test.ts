@@ -153,7 +153,7 @@ describe("NodeosActionReader", () => {
         blockNumber: 20,
         previousBlockHash: "000f42401b5636c3c1d88f31fe0e503654091fb822b0ffe21c7d35837fc9f3d8",
         timestamp: new Date("2018-06-16T05:59:49.500"),
-      }
+      },
     })
   })
 })
