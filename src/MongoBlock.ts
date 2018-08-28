@@ -1,16 +1,18 @@
-import { Block } from "demux-js"
+import { Block, BlockInfo } from "demux"
 import { EosAction } from "./interfaces"
 
 export class MongoBlock implements Block {
   public actions: EosAction[]
-  public blockHash: string
-  public blockNumber: number
-  public previousBlockHash: string
+  public blockInfo: BlockInfo
+
   constructor(rawBlock: any) {
     this.actions = this.collectActionsFromBlock(rawBlock)
-    this.blockNumber = rawBlock.block_num
-    this.blockHash = rawBlock.block_id
-    this.previousBlockHash = rawBlock.block.previous
+    this.blockInfo = {
+      blockNumber: rawBlock.block_num,
+      blockHash: rawBlock.block_id,
+      previousBlockHash: rawBlock.block.previous,
+      timestamp: new Date(rawBlock.block.timestamp),
+    }
   }
 
   protected collectActionsFromBlock(rawBlock: any = { actions: [] }): EosAction[] {

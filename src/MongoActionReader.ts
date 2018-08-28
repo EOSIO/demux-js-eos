@@ -1,5 +1,5 @@
-import { AbstractActionReader } from "demux-js"
-import { MongoClient } from "mongodb"
+import { AbstractActionReader } from "demux"
+import { Db, MongoClient } from "mongodb"
 
 import { MongoBlock } from "./MongoBlock"
 
@@ -7,8 +7,7 @@ import { MongoBlock } from "./MongoBlock"
  * Implementation of an ActionReader that polls a mongodb.
  */
 export class MongoActionReader extends AbstractActionReader {
-  protected mongodb: any
-  protected isInitialized: boolean
+  protected mongodb: Db | null
   constructor(
     protected mongoEndpoint: string = "mongodb://127.0.0.1:27017",
     public startAtBlock: number = 1,
@@ -18,19 +17,17 @@ export class MongoActionReader extends AbstractActionReader {
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
     this.mongodb = null
-    this.isInitialized = false
   }
 
   public async initialize() {
     const mongoInstance = await MongoClient.connect(this.mongoEndpoint, { useNewUrlParser: true })
     this.mongodb = await mongoInstance.db(this.dbName)
-    this.isInitialized = true
   }
 
   public async getHeadBlockNumber(): Promise<number> {
     this.throwIfNotInitialized()
 
-    const [blockInfo] = await this.mongodb.collection("block_states")
+    const [blockInfo] = await this.mongodb!.collection("block_states")
       .find({})
       .limit(1)
       .sort({ $natural: -1 })
@@ -47,7 +44,7 @@ export class MongoActionReader extends AbstractActionReader {
     this.throwIfNotInitialized()
 
     // Will not handle scenario of a fork since it only grabs first block
-    const [rawBlock] = await this.mongodb.collection("blocks")
+    const [rawBlock] = await this.mongodb!.collection("blocks")
       .find({ block_num: blockNumber })
       .toArray()
 
@@ -56,7 +53,7 @@ export class MongoActionReader extends AbstractActionReader {
   }
 
   private throwIfNotInitialized() {
-    if (!this.isInitialized) {
+    if (!this.mongodb) {
       throw Error("MongoActionReader must be initialized before fetching blocks.")
     }
   }
