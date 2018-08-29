@@ -4,10 +4,10 @@ import { Db, MongoClient } from "mongodb"
 import { MongoBlock } from "./MongoBlock"
 
 /**
- * Implementation of an ActionReader that polls a mongodb.
+ * Implementation of an ActionReader that reads blocks from a mongodb instance.
  */
 export class MongoActionReader extends AbstractActionReader {
-  protected mongodb: Db | null
+  private mongodb: Db | null
   constructor(
     protected mongoEndpoint: string = "mongodb://127.0.0.1:27017",
     public startAtBlock: number = 1,

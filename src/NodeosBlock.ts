@@ -36,7 +36,7 @@ export class NodeosBlock implements Block {
     }))
   }
 
-  protected flattenArray(arr: any[]): any[] {
+  private flattenArray(arr: any[]): any[] {
     return arr.reduce((flat, toFlatten) =>
       flat.concat(Array.isArray(toFlatten) ? this.flattenArray(toFlatten) : toFlatten), [])
   }
