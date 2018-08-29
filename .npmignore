@@ -2,3 +2,9 @@ src
 tsconfig.json
 tslint.json
 dist/**/*.test.*
+.idea
+yarn-error.log
+.travis.yml
+.eslintrc.json
+README.md
+build-docs.sh
