@@ -30,9 +30,9 @@ export class NodeosActionReader extends AbstractActionReader {
   /**
    * Returns a promise for the head block number.
    */
-  public async getHeadBlockNumber(): Promise<number> {
+  public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
     let numTries = 1
-    while (numTries < 6) {
+    while (numTries < numRetries) {
       try {
         const blockInfo = await this.httpRequest("get", {
           url: `${this.nodeosEndpoint}/v1/chain/get_info`,
@@ -46,7 +46,7 @@ export class NodeosActionReader extends AbstractActionReader {
         console.info("error getting head block number, retrying...")
       }
       numTries += 1
-      await wait(250)
+      await wait(waitTimeMs)
     }
 
     throw Error("Retrieving head block number failed!")
@@ -55,9 +55,9 @@ export class NodeosActionReader extends AbstractActionReader {
   /**
    * Returns a promise for a `NodeosBlock`.
    */
-  public async getBlock(blockNumber: number): Promise<NodeosBlock> {
+  public async getBlock(blockNumber: number, numRetries: number = 120, waitTimeMs: number = 250): Promise<NodeosBlock> {
     let numTries = 1
-    while (numTries < 6) {
+    while (numTries < numRetries) {
       try {
         const rawBlock = await this.httpRequest("post", {
           url: `${this.nodeosEndpoint}/v1/chain/get_block`,
@@ -69,7 +69,7 @@ export class NodeosActionReader extends AbstractActionReader {
         console.info("error retrieving block, retrying...")
       }
       numTries += 1
-      await wait(250)
+      await wait(waitTimeMs)
     }
 
     throw Error("Retrieving block failed!")
