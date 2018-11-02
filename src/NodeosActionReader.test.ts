@@ -32,6 +32,12 @@ describe("NodeosActionReader", () => {
     expect(blockNum).toBe(20)
   })
 
+  it("returns head block minus the number of required confirmations if configured", async () => {
+    reader = new NodeosActionReader("", 1, false, 600, request, 2)
+    const blockNum = await reader.getHeadBlockNumber()
+    expect(blockNum).toBe(18)
+  })
+
   it("gets a block", async () => {
     const block = await reader.getBlock(20)
     expect(block).toEqual({

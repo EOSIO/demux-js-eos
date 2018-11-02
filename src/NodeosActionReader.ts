@@ -21,10 +21,12 @@ export class NodeosActionReader extends AbstractActionReader {
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
     protected requestInstance: any = request,
+    protected numberOfConfirmations = 0,
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
     // Remove trailing slashes
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, "")
+    this.numberOfConfirmations = numberOfConfirmations
   }
 
   /**
@@ -41,7 +43,7 @@ export class NodeosActionReader extends AbstractActionReader {
         if (this.onlyIrreversible) {
           return blockInfo.last_irreversible_block_num
         }
-        return blockInfo.head_block_num
+        return blockInfo.head_block_num - this.numberOfConfirmations
       } catch (err) {
         console.info("error getting head block number, retrying...")
       }
