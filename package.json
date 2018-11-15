@@ -38,6 +38,7 @@
   "scripts": {
     "release": "release-it",
     "compile": "tsc",
+    "build": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "test": "jest",
