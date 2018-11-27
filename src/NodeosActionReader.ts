@@ -1,3 +1,4 @@
+import * as Logger from "bunyan"
 import { AbstractActionReader } from "demux"
 import request from "request-promise-native"
 import { NodeosBlock } from "./NodeosBlock"
@@ -15,6 +16,8 @@ function wait(ms: number) {
  */
 export class NodeosActionReader extends AbstractActionReader {
   protected nodeosEndpoint: string
+  private log: Logger
+
   constructor(
     nodeosEndpoint: string = "http://localhost:8888",
     public startAtBlock: number = 1,
@@ -25,6 +28,7 @@ export class NodeosActionReader extends AbstractActionReader {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
     // Remove trailing slashes
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, "")
+    this.log = Logger.createLogger({ name: "demux" })
   }
 
   /**
@@ -43,7 +47,7 @@ export class NodeosActionReader extends AbstractActionReader {
         }
         return blockInfo.head_block_num
       } catch (err) {
-        console.info("error getting head block number, retrying...")
+        this.log.error("error getting head block number, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
@@ -66,7 +70,7 @@ export class NodeosActionReader extends AbstractActionReader {
         const block = new NodeosBlock(rawBlock)
         return block
       } catch (err) {
-        console.info("error retrieving block, retrying...")
+        this.log.error("error retrieving block, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)

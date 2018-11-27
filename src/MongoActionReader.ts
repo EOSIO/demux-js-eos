@@ -1,3 +1,4 @@
+import * as Logger from "bunyan"
 import { AbstractActionReader } from "demux"
 import { Db, MongoClient } from "mongodb"
 
@@ -14,6 +15,8 @@ function wait(ms: number) {
  */
 export class MongoActionReader extends AbstractActionReader {
   private mongodb: Db | null
+  private log: Logger
+
   constructor(
     protected mongoEndpoint: string = "mongodb://127.0.0.1:27017",
     public startAtBlock: number = 1,
@@ -23,6 +26,7 @@ export class MongoActionReader extends AbstractActionReader {
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
     this.mongodb = null
+    this.log = Logger.createLogger({ name: "demux" })
   }
 
   public async initialize() {
@@ -49,7 +53,7 @@ export class MongoActionReader extends AbstractActionReader {
 
         return blockInfo.block_header_state.block_num
       } catch (err) {
-        console.info("error getting head block number, retrying...")
+        this.log.error("error getting head block number, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
@@ -72,7 +76,7 @@ export class MongoActionReader extends AbstractActionReader {
         const block = new MongoBlock(rawBlock)
         return block
       } catch (err) {
-        console.error("error retrieving block, retrying...")
+        this.log.error("error retrieving block, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
