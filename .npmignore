@@ -8,3 +8,5 @@ yarn-error.log
 .eslintrc.json
 README.md
 build-docs.sh
+.npmrc.template
+scripts/*
