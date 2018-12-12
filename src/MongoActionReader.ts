@@ -1,7 +1,6 @@
 import * as Logger from "bunyan"
 import { AbstractActionReader } from "demux"
 import { Db, MongoClient } from "mongodb"
-
 import { MongoBlock } from "./MongoBlock"
 
 function wait(ms: number) {
@@ -16,7 +15,6 @@ function wait(ms: number) {
 export class MongoActionReader extends AbstractActionReader {
   private mongodb: Db | null
   private log: Logger
-
   constructor(
     protected mongoEndpoint: string = "mongodb://127.0.0.1:27017",
     public startAtBlock: number = 1,
@@ -38,8 +36,7 @@ export class MongoActionReader extends AbstractActionReader {
     this.throwIfNotInitialized()
 
     let numTries = 1
-
-    while (numTries < numRetries) {
+    while (numTries <= numRetries + 1) {
       try {
         const [blockInfo] = await this.mongodb!.collection("block_states")
           .find({})
@@ -53,40 +50,62 @@ export class MongoActionReader extends AbstractActionReader {
 
         return blockInfo.block_header_state.block_num
       } catch (err) {
+        if (numTries - 1 === numRetries) {
+          throw err
+        }
         this.log.error("error getting head block number, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
     }
-    throw Error("Retrieving head block number failed!")
+    throw Error("Unknown error getting head block number.")
   }
 
   public async getBlock(blockNumber: number, numRetries: number = 120, waitTimeMs: number = 250): Promise<MongoBlock> {
     this.throwIfNotInitialized()
 
     let numTries = 1
-
-    while (numTries < numRetries) {
+    while (numTries <= numRetries + 1) {
       try {
-        // Will not handle scenario of a fork since it only grabs first block
-        const [rawBlock] = await this.mongodb!.collection("blocks")
+        const blockStates = await this.mongodb!.collection("block_states")
           .find({ block_num: blockNumber })
           .toArray()
 
-        const block = new MongoBlock(rawBlock)
-        return block
+        this.validateBlockStates(blockStates, blockNumber)
+        const [blockState] = blockStates
+        const rawActions = await this.mongodb!.collection("action_traces")
+          .find({
+            block_num: blockNumber,
+            producer_block_id: blockState.block_id,
+          })
+          .sort({ "receipt.global_sequence": 1 })
+          .toArray()
+
+        return new MongoBlock(blockState, rawActions)
       } catch (err) {
+        if (numTries - 1 === numRetries) {
+          throw err
+        }
         this.log.error("error retrieving block, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
     }
-    throw Error("Retrieving block failed!")
+    throw Error("Unknown error getting block.")
   }
 
   private throwIfNotInitialized() {
     if (!this.mongodb) {
       throw Error("MongoActionReader must be initialized before fetching blocks.")
+    }
+  }
+
+  private validateBlockStates(blockStates: any, blockNumber: number) {
+    if (blockStates.length === 0) {
+      throw new Error(`No block state with block number ${blockNumber} found`)
+    } else if (blockStates.length > 1) {
+      throw new Error(`More than one block state returned for block number ${blockNumber}. ` +
+        "Make sure you have the `--mongodb-update-via-block-num` flag set on your node.")
     }
   }
 }

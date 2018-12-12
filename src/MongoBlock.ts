@@ -5,39 +5,38 @@ export class MongoBlock implements Block {
   public actions: EosAction[]
   public blockInfo: BlockInfo
 
-  constructor(rawBlock: any) {
-    this.actions = this.collectActionsFromBlock(rawBlock)
+  constructor(blockState: any, rawActions: any) {
+    this.actions = this.parseActions(rawActions)
     this.blockInfo = {
-      blockNumber: rawBlock.block_num,
-      blockHash: rawBlock.block_id,
-      previousBlockHash: rawBlock.block.previous,
-      timestamp: new Date(rawBlock.block.timestamp),
+      blockNumber: blockState.block_num,
+      blockHash: blockState.block_id,
+      previousBlockHash: blockState.block_header_state.header.previous,
+      timestamp: new Date(blockState.block_header_state.header.timestamp),
     }
   }
 
-  protected collectActionsFromBlock(rawBlock: any = { actions: [] }): EosAction[] {
-    return this.flattenArray(rawBlock.block.transactions.map(({ trx }: any) => {
-      return trx.transaction.actions.map((action: any, actionIndex: number) => {
-
-        // Delete unneeded hex data if we have deserialized data
-        if (action.payload) {
-          delete action.hex_data // eslint-disable-line
-        }
-
-        return {
-          type: `${action.account}::${action.name}`,
-          payload: {
-            transactionId: trx.id,
-            actionIndex,
-            ...action,
-          },
+  protected parseActions(rawActions: any): EosAction[] {
+    const eosActions = []
+    let currentTx = ""
+    let actionIndex = 0
+    for (const rawAction of rawActions) {
+      if (rawAction.trx_id != currentTx) {
+        currentTx = rawAction.trx_id
+        actionIndex = 0
+      }
+      eosActions.push({
+        type: `${rawAction.act.account}::${rawAction.act.name}`,
+        payload: {
+          account: rawAction.act.account,
+          actionIndex,
+          authorization: rawAction.act.authorization,
+          data: rawAction.act.data,
+          name: rawAction.act.name,
+          transactionId: rawAction.trx_id,
         }
       })
-    }))
-  }
-
-  private flattenArray(arr: any[]): any[] {
-    return arr.reduce((flat, toFlatten) =>
-      flat.concat(Array.isArray(toFlatten) ? this.flattenArray(toFlatten) : toFlatten), [])
+      actionIndex += 1
+    }
+    return eosActions
   }
 }
