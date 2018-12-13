@@ -1,7 +1,7 @@
 import { MongoActionReader } from "./MongoActionReader"
 import { mockConnect } from "./testHelpers/mongoMock"
+import { MongoClient } from "mongodb"
 
-const { MongoClient } = require.requireActual("mongodb")
 MongoClient.connect = jest.fn(() => mockConnect)
 
 describe("MongoActionReader", () => {
@@ -12,12 +12,17 @@ describe("MongoActionReader", () => {
     await reader.initialize()
   })
 
-  it("getHeadBlockNumber returns the correct blockNumber", async () => {
+  it("returns the head block number", async () => {
     const blockNum = await reader.getHeadBlockNumber()
     expect(blockNum).toEqual(21)
   })
 
-  it("getBlock returns expected block", async () => {
+  it("returns the last irreversible block number", async () => {
+    const blockNum = await reader.getLastIrreversibleBlockNumber()
+    expect(blockNum).toEqual(20)
+  })
+
+  it("returns block with the expected block number", async () => {
     const returnedBlock = await reader.getBlock(21)
     expect(returnedBlock.blockInfo.blockNumber).toEqual(21)
   })

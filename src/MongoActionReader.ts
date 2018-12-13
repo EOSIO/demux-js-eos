@@ -14,7 +14,7 @@ function wait(ms: number) {
  */
 export class MongoActionReader extends AbstractActionReader {
   private mongodb: Db | null
-  private log: Logger
+  protected log: Logger
   constructor(
     protected mongoEndpoint: string = "mongodb://127.0.0.1:27017",
     public startAtBlock: number = 1,
@@ -44,10 +44,6 @@ export class MongoActionReader extends AbstractActionReader {
           .sort({ $natural: -1 })
           .toArray()
 
-        if (this.onlyIrreversible) {
-          return blockInfo.block_header_state.dpos_irreversible_blocknum
-        }
-
         return blockInfo.block_header_state.block_num
       } catch (err) {
         if (numTries - 1 === numRetries) {
@@ -59,6 +55,31 @@ export class MongoActionReader extends AbstractActionReader {
       await wait(waitTimeMs)
     }
     throw Error("Unknown error getting head block number.")
+  }
+
+  public async getLastIrreversibleBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
+    this.throwIfNotInitialized()
+
+    let numTries = 1
+    while (numTries <= numRetries + 1) {
+      try {
+        const [blockInfo] = await this.mongodb!.collection("block_states")
+          .find({})
+          .limit(1)
+          .sort({ $natural: -1 })
+          .toArray()
+
+          return blockInfo.block_header_state.dpos_irreversible_blocknum
+      } catch (err) {
+        if (numTries - 1 === numRetries) {
+          throw err
+        }
+        this.log.error("error getting last irreversible block number, retrying...")
+      }
+      numTries += 1
+      await wait(waitTimeMs)
+    }
+    throw Error("Unknown error getting last irreversible block number.")
   }
 
   public async getBlock(blockNumber: number, numRetries: number = 120, waitTimeMs: number = 250): Promise<MongoBlock> {

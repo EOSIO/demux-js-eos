@@ -16,18 +16,17 @@ function wait(ms: number) {
  */
 export class NodeosActionReader extends AbstractActionReader {
   protected nodeosEndpoint: string
-  private log: Logger
+  protected log: Logger
 
   constructor(
     nodeosEndpoint: string = "http://localhost:8888",
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
-    protected requestInstance: any = request,
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
-    // Remove trailing slashes
-    this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, "")
+    this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, "") // Removes trailing slashes
+
     this.log = Logger.createLogger({ name: "demux" })
   }
 
@@ -36,24 +35,46 @@ export class NodeosActionReader extends AbstractActionReader {
    */
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
     let numTries = 1
-    while (numTries < numRetries) {
+    while (numTries <= numRetries + 1) {
       try {
-        const blockInfo = await this.httpRequest("get", {
+        const blockInfo = await request.get({
           url: `${this.nodeosEndpoint}/v1/chain/get_info`,
           json: true,
         })
-        if (this.onlyIrreversible) {
-          return blockInfo.last_irreversible_block_num
-        }
         return blockInfo.head_block_num
       } catch (err) {
+        if (numTries - 1 === numRetries) {
+          throw err
+        }
         this.log.error("error getting head block number, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
     }
 
-    throw Error("Retrieving head block number failed!")
+    throw Error("Unknown error getting head block number.")
+  }
+
+  public async getLastIrreversibleBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
+    let numTries = 1
+    while (numTries <= numRetries + 1) {
+      try {
+        const blockInfo = await request.get({
+          url: `${this.nodeosEndpoint}/v1/chain/get_info`,
+          json: true,
+        })
+        return blockInfo.last_irreversible_block_num
+      } catch (err) {
+        if (numTries - 1 === numRetries) {
+          throw err
+        }
+        this.log.error("error getting last irreversible block number, retrying...")
+      }
+      numTries += 1
+      await wait(waitTimeMs)
+    }
+
+    throw Error("Unknown error getting last irreversible block number.")
   }
 
   /**
@@ -61,29 +82,24 @@ export class NodeosActionReader extends AbstractActionReader {
    */
   public async getBlock(blockNumber: number, numRetries: number = 120, waitTimeMs: number = 250): Promise<NodeosBlock> {
     let numTries = 1
-    while (numTries < numRetries) {
+    while (numTries <= numRetries + 1) {
       try {
-        const rawBlock = await this.httpRequest("post", {
+        const rawBlock = await request.post({
           url: `${this.nodeosEndpoint}/v1/chain/get_block`,
           json: { block_num_or_id: blockNumber },
         })
         const block = new NodeosBlock(rawBlock)
         return block
       } catch (err) {
+        if (numTries - 1 === numRetries) {
+          throw err
+        }
         this.log.error("error retrieving block, retrying...")
       }
       numTries += 1
       await wait(waitTimeMs)
     }
 
-    throw Error("Retrieving block failed!")
-  }
-
-  protected async httpRequest(method: string, requestParams: any): Promise<any> {
-    if (method === "get") {
-      return await this.requestInstance.get(requestParams)
-    } else if (method === "post") {
-      return await this.requestInstance.post(requestParams)
-    }
+    throw Error("Unknown error getting block.")
   }
 }
