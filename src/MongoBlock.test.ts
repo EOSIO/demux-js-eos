@@ -1,11 +1,12 @@
 import { MongoBlock } from "./MongoBlock"
-import { mongoRawBlock } from "./testHelpers/mongoRawBlock"
+import { mongoBlockState, mongoRawActions } from "./testHelpers/mongoObjectMocks"
+
 
 describe("MongoBlock", () => {
   let mongoBlock: any
 
   beforeEach(() => {
-    mongoBlock = new MongoBlock(mongoRawBlock)
+    mongoBlock = new MongoBlock(mongoBlockState, mongoRawActions)
   })
 
   it("collects actions from blocks", () => {
@@ -27,7 +28,6 @@ describe("MongoBlock", () => {
               quantity: "1.0000 EOS",
               to: "bob",
             },
-            hex_data: "000000000010a33b0000000000000e3d102700000000000004454f5300000000016d",
             name: "transfer",
             transactionId: "051620080b3212292f56a836c6b2f294291f6e6793dc0f12ce6a886f83d97f83",
           },
@@ -49,7 +49,6 @@ describe("MongoBlock", () => {
               quantity: "1.0000 EOS",
               to: "bob",
             },
-            hex_data: "000000000010a33b0000000000000e3d102700000000000004454f5300000000016d",
             name: "transfer",
             transactionId: "051620080b3212292f56a836c6b2f294291f6e6793dc0f12ce6a886f83d97f83",
           },

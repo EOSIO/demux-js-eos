@@ -1,6 +1,6 @@
 {
   "name": "demux-eos",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Demux-js Action Reader implementations for EOSIO blockchains",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/bunyan": "^1.8.5",
     "@types/jest": "^23.1.4",
     "@types/mongodb": "^3.1.4",
     "@types/node": "^10.5.1",
@@ -27,17 +28,19 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux": "^2.0.0",
+    "bunyan": "^1.8.12",
+    "demux": "^3.1.3",
     "mongodb": "^3.1.3",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "peerDependencies": {
-    "demux": "^2.0.0"
+    "demux": "^3.1.3"
   },
   "scripts": {
     "release": "release-it",
     "compile": "tsc",
+    "build": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "test": "jest",
@@ -45,22 +48,19 @@
   },
   "jest": {
     "moduleFileExtensions": [
+      "js",
       "ts",
-      "tsx",
-      "js"
+      "tsx"
     ],
     "transform": {
       "^.+\\.(tsx?)$": "ts-jest"
     },
     "globals": {
       "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
+        "tsConfig": "tsconfig.json"
       }
     },
     "testRegex": "(/src/.*(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "mongodb": "<rootDir>/src/testHelpers/mongoMock.ts"
-    }
+    "testEnvironment": "node"
   }
 }
