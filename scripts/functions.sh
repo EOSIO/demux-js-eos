@@ -15,6 +15,15 @@ setup_git() {
   echo "https://${GITHUB_API_KEY}:@github.com" > .git/credentials
 }
 
+check_branch() {
+  if ! [ "$(git symbolic-ref --short -q HEAD)" = "automate-publish" -a -n "$TRAVIS_TAG" ]; then
+    echo "Current branch is not "automate-publish"!"
+    echo "Current branch: $(git symbolic-ref --short -q HEAD)"
+    return 1
+  fi
+  return 0
+}
+
 check_version() {
   if ! [ "$TRAVIS_TAG" = "$(npm run version --silent)" ]; then
     echo "Tag does not match the version in package.json!"
