@@ -19,6 +19,7 @@ jobs:
       script:
         - npm run lint
         - npm run test
+        - echo $TRAVIS_BRANCH
     - stage: publish-edge
       name: "Publish @edge to NPM"
       script:
