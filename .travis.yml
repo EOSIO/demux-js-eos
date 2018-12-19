@@ -10,7 +10,7 @@ stages:
   - name: publish-edge
     if: (NOT type IN (pull_request)) AND (branch = develop)
   - name: publish-latest
-#    if: (tag =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$) AND (branch = automate-publish)
+    if: (tag =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$) AND (branch = automate-publish)
 jobs:
   include:
     - stage: test
@@ -28,7 +28,7 @@ jobs:
         script: ./scripts/publish-edge.sh
         on:
           branch: develop
-    - stage: publish-edge
+    - stage: publish-latest
       name: "Publish @latest to NPM"
       script:
         - npm run build
