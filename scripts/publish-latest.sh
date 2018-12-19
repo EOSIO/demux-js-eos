@@ -1,3 +1,7 @@
+echo $(pwd)
+
+echo $(ls -al)
+
 . functions.sh
 
 echo "Running on branch ${TRAVIS_BRANCH}":
