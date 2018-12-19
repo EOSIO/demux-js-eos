@@ -11,7 +11,7 @@ stages:
     if: (NOT type IN (pull_request)) AND (branch = develop)
   - name: publish-latest
 #    if: (tag =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$) AND (branch = automate-publish)
-    if: branch = automate-publish
+    if: branch =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
 jobs:
   include:
     - stage: test
@@ -20,6 +20,7 @@ jobs:
         - npm run lint
         - npm run test
         - echo $TRAVIS_BRANCH
+        - echo $TRAVIS_TAG
     - stage: publish-edge
       name: "Publish @edge to NPM"
       script:
@@ -38,5 +39,3 @@ jobs:
         provider: script
         skip_cleanup: true
         script: ./scripts/publish-latest.sh
-        on:
-          branch: "automate-publish"
