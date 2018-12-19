@@ -7,8 +7,10 @@ before_install:
   - npm install -g typescript
 stages:
   - test
-  - name: deploy
+  - name: publish-edge
     if: (NOT type IN (pull_request)) AND (branch = develop)
+  - name: publish-latest
+    if: (tag =~ /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/) AND (branch = automate-publish)
 jobs:
   include:
     - stage: test
@@ -16,14 +18,23 @@ jobs:
       script:
         - npm run lint
         - npm run test
-    - stage: deploy    
-      name: "Deploy to NPM"
+    - stage: publish-edge
+      name: "Publish @edge to NPM"
       script:
         - npm run build
       deploy:
         provider: script
         skip_cleanup: true
-        script: 
-          - ./scripts/publish.sh
+        script: ./scripts/publish-edge.sh
         on:
           branch: develop
+    - stage: publish-edge
+      name: "Publish @latest to NPM"
+      script:
+        - npm run build
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script: ./scripts/publish-latest.sh
+        on:
+          branch: automate-publish
