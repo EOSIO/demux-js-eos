@@ -18,11 +18,12 @@ setup_git() {
 }
 
 check_branch() {
-  if ! [ "$(git symbolic-ref --short -q HEAD)" = "automate-publish" -a -n "$TRAVIS_TAG" ]; then
-    echo "Current branch is not "automate-publish"!"
-    echo "Current branch: $(git symbolic-ref --short -q HEAD)"
+  if ! [ "$(git symbolic-ref --short -q HEAD)" = "automate-publish" ]; then
+    echo "✖ Current branch is not "automate-publish"!"
+    echo "    Current branch: $(git symbolic-ref --short -q HEAD)"
     return 1
   fi
+  echo "✔ Current branch is automate-publish"
   return 0
 }
 
@@ -33,6 +34,9 @@ check_version() {
     echo "version: $(npm run version --silent)"
     return 1
   fi
+  echo "✔ Tag matches version in package.json"
+  echo "    Tag: $TRAVIS_TAG"
+  echo "    Version: $(npm run version --silent)"
   return 0
 }
 
