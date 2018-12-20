@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 setup_git() {
   echo "Setting up git"
 
