@@ -43,6 +43,7 @@ clean_git() {
 
 check_head() {
   echo "  Checking if HEAD aligns with automate-publish..."
+  git fetch origin automate-publish
   if ! [ "$(git rev-parse HEAD)" = "$(git show-ref refs/heads/automate-publish --hash)" ]; then
     echo "✖ Current HEAD does not match head of automate-publish!"
     echo "  - HEAD: $(git rev-parse HEAD)"
