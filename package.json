@@ -1,6 +1,6 @@
 {
   "name": "@blockone/demux-eos",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Demux-js Action Reader implementations for EOSIO blockchains",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -45,7 +45,7 @@
     "lint": "tslint -c tslint.json src/**/*.ts",
     "test": "jest",
     "build-docs": "./build-docs.sh",
-    "version": "echo $npm_package_version"
+    "current-version": "echo $npm_package_version"
   },
   "jest": {
     "moduleFileExtensions": [

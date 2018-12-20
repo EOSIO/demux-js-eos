@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 setup_git() {
-  echo "Setting up git"
+  echo "  Setting up git configuration..."
 
   # Set the user name and email to match the API token holder
   # This will make sure the git commits will have the correct photo
@@ -15,52 +15,76 @@ setup_git() {
 
   # This associates the API Key with the account
   echo "https://${GITHUB_API_KEY}:@github.com" > .git/credentials
+
+  echo "✔ Set up git configuration"
 }
 
-check_branch() {
-  if ! [ "$(git symbolic-ref --short -q HEAD)" = "automate-publish" ]; then
-    echo "✖ Current branch is not "automate-publish"!"
-    echo "    Current branch: $(git symbolic-ref --short -q HEAD)"
+clean_git() {
+  echo "  Cleaning working tree from changes..."
+  # Make sure that the workspace is clean
+  # It could be "dirty" if
+  # 1. package-lock.json is not aligned with package.json
+  # 2. npm install is run
+  git checkout -- .
+
+  # Echo the status to the log so that we can see it is OK
+  git status
+
+  if $(git diff-index --quiet HEAD --); then
+    echo "✔ Working tree clean"
+    return 0
+  fi
+
+  echo "✖ Unable to clean working tree"
+  echo "  Git status:"
+  git status
+  return 1
+}
+
+check_head() {
+  echo "  Checking if HEAD aligns with automate-publish..."
+  if ! [ "$(git rev-parse HEAD)" = "$(git show-ref refs/heads/automate-publish --hash)" ]; then
+    echo "✖ Current HEAD does not match head of automate-publish!"
+    echo "  - HEAD: $(git rev-parse HEAD)"
+    echo "  - automate-publish: $(git show-ref refs/heads/automate-publish --hash)"
     return 1
   fi
-  echo "✔ Current branch is automate-publish"
+  echo "✔ Current HEAD matches head of automate-publish"
   return 0
 }
 
 check_version() {
-  if ! [ "$TRAVIS_TAG" = "$(npm run version --silent)" ]; then
-    echo "Tag does not match the version in package.json!"
-    echo "tag: $TRAVIS_TAG"
-    echo "version: $(npm run version --silent)"
+  echo "  Checking if version of tag matches version in package.json..."
+  if ! [ "$TRAVIS_TAG" = "$(npm run current-version --silent)" ]; then
+    echo "✖ Tag does not match the version in package.json!"
+    echo "  - Tag: $TRAVIS_TAG"
+    echo "  - Version: $(npm run current-version --silent)"
     return 1
   fi
   echo "✔ Tag matches version in package.json"
-  echo "    Tag: $TRAVIS_TAG"
-  echo "    Version: $(npm run version --silent)"
+  echo "  - Tag: $TRAVIS_TAG"
+  echo "  - Version: $(npm run current-version --silent)"
   return 0
 }
 
 publish_edge() {
-  echo "Appending short commit hash to version"
+  echo "  Publishing edge release to NPM..."
 
   # Run the deploy build and increment the package versions
   current_commit="$(git rev-parse --short HEAD)";
-
   npm version prerelease -preid "${current_commit}" -no-git-tag-version
-
   git commit -a -m "Updating version [skip ci]"
-
-  echo "Publish edge to NPM"
-
   cp .npmrc.template $HOME/.npmrc
-
   npm publish --tag edge
+
+  echo "✔ Published edge release"
 }
 
 publish_latest() {
-  echo "Publish new release to NPM"
+  echo "  Publishing new release to NPM..."
 
   cp .npmrc.template $HOME/.npmrc
-
   npm publish
+
+  echo "✔ Published new release"
 }
