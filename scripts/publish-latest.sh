@@ -1,8 +1,6 @@
-echo $(pwd)
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo $(ls -al)
-
-. functions.sh
+source $dir/functions.sh
 
 echo "Running on branch ${TRAVIS_BRANCH}":
 
