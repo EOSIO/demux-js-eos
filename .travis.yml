@@ -7,8 +7,11 @@ before_install:
   - npm install -g typescript
 stages:
   - test
-  - name: deploy
+  - name: publish-edge
     if: (NOT type IN (pull_request)) AND (branch = develop)
+  - name: publish-latest
+    # Travis assigns the tag to branch for some reason. This matches any valid semver version.
+    if: branch =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
 jobs:
   include:
     - stage: test
@@ -16,14 +19,24 @@ jobs:
       script:
         - npm run lint
         - npm run test
-    - stage: deploy    
-      name: "Deploy to NPM"
+    - stage: publish-edge
+      name: "Publish @edge to NPM"
       script:
         - npm run build
       deploy:
         provider: script
         skip_cleanup: true
-        script: 
-          - ./scripts/publish.sh
+        script: ./scripts/publish-edge.sh
         on:
           branch: develop
+    - stage: publish-latest
+      name: "Publish @latest to NPM"
+      script:
+        - npm run build
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script: ./scripts/publish-latest.sh
+        on:
+          all_branches: true
+          condition: $TRAVIS_TAG =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
