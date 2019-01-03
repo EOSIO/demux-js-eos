@@ -12,6 +12,7 @@ export interface EosPayload {
   data: any
   name: string
   transactionId: string
+  notifiedAccounts?: string[]
 }
 
 export interface EosAction extends Action {

@@ -19,11 +19,17 @@ export class MongoBlock implements Block {
     const eosActions = []
     let currentTx = ""
     let actionIndex = 0
+    let currentActionDigest = ""
     for (const rawAction of rawActions) {
-      if (rawAction.trx_id != currentTx) {
+      if (rawAction.trx_id !== currentTx) {
         currentTx = rawAction.trx_id
         actionIndex = 0
       }
+      if (rawAction.receipt.act_digest === currentActionDigest) {
+        eosActions[eosActions.length - 1].payload.notifiedAccounts.push(rawAction.receipt.receiver)
+        continue
+      }
+      currentActionDigest = rawAction.receipt.act_digest
       eosActions.push({
         type: `${rawAction.act.account}::${rawAction.act.name}`,
         payload: {
@@ -33,7 +39,8 @@ export class MongoBlock implements Block {
           data: rawAction.act.data,
           name: rawAction.act.name,
           transactionId: rawAction.trx_id,
-        }
+          notifiedAccounts: [rawAction.receipt.receiver],
+        },
       })
       actionIndex += 1
     }
