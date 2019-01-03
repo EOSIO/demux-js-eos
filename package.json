@@ -1,6 +1,6 @@
 {
   "name": "demux-eos",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Demux-js Action Reader implementations for EOSIO blockchains",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
