@@ -28,6 +28,7 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
+    "@blockone/tslint-config-blockone": "^1.0.0",
     "bunyan": "^1.8.12",
     "demux": "^3.1.3",
     "mongodb": "^3.1.3",
