@@ -1,5 +1,5 @@
-import { Block, BlockInfo } from "demux"
-import { EosAction } from "./interfaces"
+import { Block, BlockInfo } from 'demux'
+import { EosAction } from './interfaces'
 
 export class MongoBlock implements Block {
   public actions: EosAction[]
@@ -17,9 +17,9 @@ export class MongoBlock implements Block {
 
   protected parseActions(rawActions: any): EosAction[] {
     const eosActions = []
-    let currentTx = ""
+    let currentTx = ''
     let actionIndex = 0
-    let currentActionDigest = ""
+    let currentActionDigest = ''
     for (const rawAction of rawActions) {
       if (rawAction.trx_id !== currentTx) {
         currentTx = rawAction.trx_id

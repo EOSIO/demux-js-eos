@@ -1,51 +1,51 @@
-import { NodeosBlock } from "./NodeosBlock"
-import { nodeosRawBlock } from "./testHelpers/nodeosRawBlock"
+import { NodeosBlock } from './NodeosBlock'
+import { nodeosRawBlock } from './testHelpers/nodeosRawBlock'
 
-describe("NodeosBlock", () => {
+describe('NodeosBlock', () => {
   let eosBlock: NodeosBlock
 
   beforeEach(() => {
     eosBlock = new NodeosBlock(nodeosRawBlock)
   })
 
-  it("collects actions from blocks", async () => {
+  it('collects actions from blocks', async () => {
     const { actions } = eosBlock
     expect(actions).toEqual([
       {
         payload: {
-          account: "testing",
+          account: 'testing',
           actionIndex: 0,
           authorization: [
             {
-              actor: "testing",
-              permission: "active",
+              actor: 'testing',
+              permission: 'active',
             },
           ],
           data: {
-            memo: "EOS is awesome!",
+            memo: 'EOS is awesome!',
           },
-          name: "action",
-          transactionId: "b890beb84a6d1d77755f2e0cdad48e2ffcfd06ff3481917b4875cc5f3a343533",
+          name: 'action',
+          transactionId: 'b890beb84a6d1d77755f2e0cdad48e2ffcfd06ff3481917b4875cc5f3a343533',
         },
-        type: "testing::action",
+        type: 'testing::action',
       },
       {
         payload: {
-          account: "testing",
+          account: 'testing',
           actionIndex: 1,
           authorization: [
             {
-              actor: "testing",
-              permission: "active",
+              actor: 'testing',
+              permission: 'active',
             },
           ],
           data: {
-            memo: "Go EOS!",
+            memo: 'Go EOS!',
           },
-          name: "action2",
-          transactionId: "b890beb84a6d1d77755f2e0cdad48e2ffcfd06ff3481917b4875cc5f3a343533",
+          name: 'action2',
+          transactionId: 'b890beb84a6d1d77755f2e0cdad48e2ffcfd06ff3481917b4875cc5f3a343533',
         },
-        type: "testing::action2",
+        type: 'testing::action2',
       },
     ])
   })

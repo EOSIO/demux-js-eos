@@ -1,7 +1,7 @@
-import * as Logger from "bunyan"
-import { AbstractActionReader } from "demux"
-import request from "request-promise-native"
-import { NodeosBlock } from "./NodeosBlock"
+import * as Logger from 'bunyan'
+import { AbstractActionReader } from 'demux'
+import request from 'request-promise-native'
+import { NodeosBlock } from './NodeosBlock'
 
 function wait(ms: number) {
   return new Promise((resolve) => {
@@ -19,15 +19,15 @@ export class NodeosActionReader extends AbstractActionReader {
   protected log: Logger
 
   constructor(
-    nodeosEndpoint: string = "http://localhost:8888",
+    nodeosEndpoint: string = 'http://localhost:8888',
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
-    this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, "") // Removes trailing slashes
+    this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
 
-    this.log = Logger.createLogger({ name: "demux" })
+    this.log = Logger.createLogger({ name: 'demux' })
   }
 
   /**
@@ -46,13 +46,13 @@ export class NodeosActionReader extends AbstractActionReader {
         if (numTries - 1 === numRetries) {
           throw err
         }
-        this.log.error("error getting head block number, retrying...")
+        this.log.error('error getting head block number, retrying...')
       }
       numTries += 1
       await wait(waitTimeMs)
     }
 
-    throw Error("Unknown error getting head block number.")
+    throw Error('Unknown error getting head block number.')
   }
 
   public async getLastIrreversibleBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
@@ -68,13 +68,13 @@ export class NodeosActionReader extends AbstractActionReader {
         if (numTries - 1 === numRetries) {
           throw err
         }
-        this.log.error("error getting last irreversible block number, retrying...")
+        this.log.error('error getting last irreversible block number, retrying...')
       }
       numTries += 1
       await wait(waitTimeMs)
     }
 
-    throw Error("Unknown error getting last irreversible block number.")
+    throw Error('Unknown error getting last irreversible block number.')
   }
 
   /**
@@ -94,12 +94,12 @@ export class NodeosActionReader extends AbstractActionReader {
         if (numTries - 1 === numRetries) {
           throw err
         }
-        this.log.error("error retrieving block, retrying...")
+        this.log.error('error retrieving block, retrying...')
       }
       numTries += 1
       await wait(waitTimeMs)
     }
 
-    throw Error("Unknown error getting block.")
+    throw Error('Unknown error getting block.')
   }
 }

@@ -1,8 +1,8 @@
-import { NodeosActionReader } from "./NodeosActionReader"
-import { nodeosRawBlock } from "./testHelpers/nodeosRawBlock"
-import request from "request-promise-native"
+import request from 'request-promise-native'
+import { NodeosActionReader } from './NodeosActionReader'
+import { nodeosRawBlock } from './testHelpers/nodeosRawBlock'
 
-describe("NodeosActionReader", () => {
+describe('NodeosActionReader', () => {
   let reader: NodeosActionReader
 
   const blockInfo = {
@@ -11,26 +11,25 @@ describe("NodeosActionReader", () => {
   }
 
   beforeAll(() => {
-      request.get = jest.fn(async () => blockInfo)
-      request.post = jest.fn(async () => nodeosRawBlock)
+    request.get = jest.fn(async () => blockInfo)
+    request.post = jest.fn(async () => nodeosRawBlock)
   })
 
   beforeEach(() => {
-    reader = new NodeosActionReader("", 10, false, 600)
+    reader = new NodeosActionReader('', 10, false, 600)
   })
 
-  it("returns head block number", async () => {
+  it('returns head block number', async () => {
     const blockNum = await reader.getHeadBlockNumber()
     expect(blockNum).toBe(20)
   })
 
-
-  it("returns last irreversible block number", async () => {
+  it('returns last irreversible block number', async () => {
     const blockNum = await reader.getLastIrreversibleBlockNumber()
     expect(blockNum).toBe(10)
   })
 
-  it("gets block with correct block number", async () => {
+  it('gets block with correct block number', async () => {
     const block = await reader.getBlock(20)
     expect(block.blockInfo.blockNumber).toEqual(20)
   })
