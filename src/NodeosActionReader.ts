@@ -2,12 +2,7 @@ import * as Logger from 'bunyan'
 import { AbstractActionReader } from 'demux'
 import request from 'request-promise-native'
 import { NodeosBlock } from './NodeosBlock'
-
-function wait(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
+import { retry } from './utils'
 
 /**
  * Reads from an EOSIO nodeos node to get blocks of actions.
@@ -34,72 +29,52 @@ export class NodeosActionReader extends AbstractActionReader {
    * Returns a promise for the head block number.
    */
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
-    let numTries = 1
-    while (numTries <= numRetries + 1) {
-      try {
+    try {
+      const blockNum = await retry(async () => {
         const blockInfo = await request.get({
           url: `${this.nodeosEndpoint}/v1/chain/get_info`,
           json: true,
         })
         return blockInfo.head_block_num
-      } catch (err) {
-        if (numTries - 1 === numRetries) {
-          throw err
-        }
-        this.log.error('error getting head block number, retrying...')
-      }
-      numTries += 1
-      await wait(waitTimeMs)
+      }, numRetries, waitTimeMs)
+      return blockNum
+    } catch (err) {
+      throw new Error('Error retrieving head block, max retries failed')
     }
-
-    throw Error('Unknown error getting head block number.')
   }
 
   public async getLastIrreversibleBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
-    let numTries = 1
-    while (numTries <= numRetries + 1) {
-      try {
+    try {
+      const irreversibleBlockNum = await retry(async () => {
         const blockInfo = await request.get({
           url: `${this.nodeosEndpoint}/v1/chain/get_info`,
           json: true,
         })
         return blockInfo.last_irreversible_block_num
-      } catch (err) {
-        if (numTries - 1 === numRetries) {
-          throw err
-        }
-        this.log.error('error getting last irreversible block number, retrying...')
-      }
-      numTries += 1
-      await wait(waitTimeMs)
-    }
+      }, numRetries, waitTimeMs)
 
-    throw Error('Unknown error getting last irreversible block number.')
+      return irreversibleBlockNum
+    } catch (err) {
+      throw new Error('Error retrieving last irreversible block, max retries failed')
+    }
   }
 
   /**
    * Returns a promise for a `NodeosBlock`.
    */
   public async getBlock(blockNumber: number, numRetries: number = 120, waitTimeMs: number = 250): Promise<NodeosBlock> {
-    let numTries = 1
-    while (numTries <= numRetries + 1) {
-      try {
+    try {
+      const block = await retry(async () => {
         const rawBlock = await request.post({
           url: `${this.nodeosEndpoint}/v1/chain/get_block`,
           json: { block_num_or_id: blockNumber },
         })
-        const block = new NodeosBlock(rawBlock)
-        return block
-      } catch (err) {
-        if (numTries - 1 === numRetries) {
-          throw err
-        }
-        this.log.error('error retrieving block, retrying...')
-      }
-      numTries += 1
-      await wait(waitTimeMs)
-    }
+        return new NodeosBlock(rawBlock)
+      }, numRetries, waitTimeMs)
 
-    throw Error('Unknown error getting block.')
+      return block
+    } catch (err) {
+      throw new Error('Error retrieving block, max retries failed')
+    }
   }
 }
