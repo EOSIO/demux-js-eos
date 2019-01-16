@@ -1,6 +1,6 @@
 # demux-js-eos [![Build Status](https://travis-ci.org/EOSIO/demux-js-eos.svg?branch=develop)](https://travis-ci.org/EOSIO/demux-js-eos)
 
-Demux Action Reader implementations to pass block and action data from EOSIO-based blockchains. 
+Demux Action Reader implementations to read block and action data from EOSIO-based blockchains. 
 
 ## Installation
 
