@@ -51,7 +51,9 @@ Unlike the `NodeosActionReader`, inline and deferred actions are able to be capt
 const { BaseActionWatcher } = require("demux")
 const { MongoActionReader } = require("demux-eos")
 
-const actionHandler = ... // [`See supported Action Handlers`](https://github.com/EOSIO/demux-js#class-implementations)
+// See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
+const actionHandler = ...
+
 const actionReader = new MongoActionReader(
   "mongo://...", // mongoEndpoint: the url of the mongodb instance
   1234,          // startAtBlock: the first block relevant to our application
@@ -82,7 +84,9 @@ All that is required is a running Nodeos instance that has the `chain_api_plugin
 const { BaseActionWatcher } = require("demux")
 const { MongoActionReader } = require("demux-eos")
 
-const actionHandler = ... // [`See supported Action Handlers`](https://github.com/EOSIO/demux-js#class-implementations)
+// See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
+const actionHandler = ...
+
 const actionReader = new MongoActionReader(
   "http://...", // mongoEndpoint: the url of the Nodeos API
   1234,         // startAtBlock: the first block relevant to our application
