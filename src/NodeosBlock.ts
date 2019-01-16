@@ -1,5 +1,5 @@
-import { Block, BlockInfo } from "demux"
-import { EosAction } from "./interfaces"
+import { Block, BlockInfo } from 'demux'
+import { EosAction } from './interfaces'
 
 export class NodeosBlock implements Block {
   public actions: EosAction[]
