@@ -2,12 +2,7 @@ import * as Logger from 'bunyan'
 import { AbstractActionReader } from 'demux'
 import { Db, MongoClient } from 'mongodb'
 import { MongoBlock } from './MongoBlock'
-
-function wait(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
+import { retry } from './utils'
 
 /**
  * Implementation of an ActionReader that reads blocks from a mongodb instance.
@@ -35,9 +30,8 @@ export class MongoActionReader extends AbstractActionReader {
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
     this.throwIfNotInitialized()
 
-    let numTries = 1
-    while (numTries <= numRetries + 1) {
-      try {
+    try {
+      const blockNum = await retry(async () => {
         const [blockInfo] = await this.mongodb!.collection('block_states')
           .find({})
           .limit(1)
@@ -45,24 +39,19 @@ export class MongoActionReader extends AbstractActionReader {
           .toArray()
 
         return blockInfo.block_header_state.block_num
-      } catch (err) {
-        if (numTries - 1 === numRetries) {
-          throw err
-        }
-        this.log.error('error getting head block number, retrying...')
-      }
-      numTries += 1
-      await wait(waitTimeMs)
+      }, numRetries, waitTimeMs)
+
+      return blockNum
+    } catch (err) {
+      throw new Error('Error retrieving head block, max retries failed')
     }
-    throw Error('Unknown error getting head block number.')
   }
 
   public async getLastIrreversibleBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
     this.throwIfNotInitialized()
 
-    let numTries = 1
-    while (numTries <= numRetries + 1) {
-      try {
+    try {
+      const irreversibleBlockNum = await retry(async () => {
         const [blockInfo] = await this.mongodb!.collection('block_states')
           .find({})
           .limit(1)
@@ -70,24 +59,19 @@ export class MongoActionReader extends AbstractActionReader {
           .toArray()
 
         return blockInfo.block_header_state.dpos_irreversible_blocknum
-      } catch (err) {
-        if (numTries - 1 === numRetries) {
-          throw err
-        }
-        this.log.error('error getting last irreversible block number, retrying...')
-      }
-      numTries += 1
-      await wait(waitTimeMs)
+      }, numRetries, waitTimeMs)
+
+      return irreversibleBlockNum
+    } catch (err) {
+      throw new Error('Error retrieving last irreversible block, max retries failed')
     }
-    throw Error('Unknown error getting last irreversible block number.')
   }
 
   public async getBlock(blockNumber: number, numRetries: number = 120, waitTimeMs: number = 250): Promise<MongoBlock> {
     this.throwIfNotInitialized()
 
-    let numTries = 1
-    while (numTries <= numRetries + 1) {
-      try {
+    try {
+      const mongoBlock = await retry(async () => {
         const blockStates = await this.mongodb!.collection('block_states')
           .find({ block_num: blockNumber })
           .toArray()
@@ -103,16 +87,12 @@ export class MongoActionReader extends AbstractActionReader {
           .toArray()
 
         return new MongoBlock(blockState, rawActions)
-      } catch (err) {
-        if (numTries - 1 === numRetries) {
-          throw err
-        }
-        this.log.error('error retrieving block, retrying...')
-      }
-      numTries += 1
-      await wait(waitTimeMs)
+      }, numRetries, waitTimeMs)
+
+      return mongoBlock
+    } catch (err) {
+      throw new Error('Error retrieving block, max retries failed')
     }
-    throw Error('Unknown error getting block.')
   }
 
   private throwIfNotInitialized() {
