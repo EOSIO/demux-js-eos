@@ -1,6 +1,14 @@
 import * as Logger from 'bunyan'
 import { AbstractActionReader } from 'demux'
 import { Db, MongoClient } from 'mongodb'
+import {
+  MultipleBlockStateError,
+  NoBlockStateFoundError,
+  NotInitializedError,
+  RetrieveBlockError,
+  RetrieveHeadBlockError,
+  RetrieveIrreversibleBlockError,
+} from './errors'
 import { MongoBlock } from './MongoBlock'
 import { retry } from './utils'
 
@@ -43,7 +51,7 @@ export class MongoActionReader extends AbstractActionReader {
 
       return blockNum
     } catch (err) {
-      throw new Error('Error retrieving head block, max retries failed')
+      throw new RetrieveHeadBlockError()
     }
   }
 
@@ -63,7 +71,7 @@ export class MongoActionReader extends AbstractActionReader {
 
       return irreversibleBlockNum
     } catch (err) {
-      throw new Error('Error retrieving last irreversible block, max retries failed')
+      throw new RetrieveIrreversibleBlockError()
     }
   }
 
@@ -91,22 +99,21 @@ export class MongoActionReader extends AbstractActionReader {
 
       return mongoBlock
     } catch (err) {
-      throw new Error('Error retrieving block, max retries failed')
+      throw new RetrieveBlockError()
     }
   }
 
   private throwIfNotInitialized() {
     if (!this.mongodb) {
-      throw Error('MongoActionReader must be initialized before fetching blocks.')
+      throw new NotInitializedError()
     }
   }
 
   private validateBlockStates(blockStates: any, blockNumber: number) {
     if (blockStates.length === 0) {
-      throw new Error(`No block state with block number ${blockNumber} found`)
+      throw new NoBlockStateFoundError(blockNumber)
     } else if (blockStates.length > 1) {
-      throw new Error(`More than one block state returned for block number ${blockNumber}. ` +
-        'Make sure you have the `--mongodb-update-via-block-num` flag set on your node.')
+      throw new MultipleBlockStateError(blockNumber)
     }
   }
 }
