@@ -1,6 +1,7 @@
 import * as Logger from 'bunyan'
 import { AbstractActionReader } from 'demux'
 import request from 'request-promise-native'
+import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from './errors'
 import { NodeosBlock } from './NodeosBlock'
 import { retry } from './utils'
 
@@ -39,7 +40,7 @@ export class NodeosActionReader extends AbstractActionReader {
       }, numRetries, waitTimeMs)
       return blockNum
     } catch (err) {
-      throw new Error('Error retrieving head block, max retries failed')
+      throw new RetrieveHeadBlockError()
     }
   }
 
@@ -55,7 +56,7 @@ export class NodeosActionReader extends AbstractActionReader {
 
       return irreversibleBlockNum
     } catch (err) {
-      throw new Error('Error retrieving last irreversible block, max retries failed')
+      throw new RetrieveIrreversibleBlockError()
     }
   }
 
@@ -74,7 +75,7 @@ export class NodeosActionReader extends AbstractActionReader {
 
       return block
     } catch (err) {
-      throw new Error('Error retrieving block, max retries failed')
+      throw new RetrieveBlockError()
     }
   }
 }
