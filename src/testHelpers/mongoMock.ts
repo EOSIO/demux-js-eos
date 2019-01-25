@@ -106,29 +106,72 @@ const actionTraces = [
 ]
 
 export const mockConnect = {
-  db: () => ({
-    collection: (col: any) => {
-      if (col === 'block_states') {
-        return {
-          find: () => ({
-            limit: () => ({
-              sort: () => ({
+  db: (name: string) => {
+    if (name === 'failed') {
+      return {
+        collection: (col: any) => {
+          if (col === 'block_states') {
+            return {
+              find: () => ({
+                limit: () => ({
+                  sort: () => ({
+                    toArray: () => [blockState],
+                  }),
+                }),
                 toArray: () => [blockState],
               }),
-            }),
-            toArray: () => [blockState],
-          }),
+            }
+          } else if (col === 'action_traces') {
+            return ({
+              find: () => ({
+                sort: () => ({
+                  toArray: () => actionTraces,
+                }),
+              }),
+            })
+          }
+          return
+        },
+        collections: () => {
+          return []
         }
-      } else if (col === 'action_traces') {
-        return ({
-          find: () => ({
-            sort: () => ({
-              toArray: () => actionTraces,
-            }),
-          }),
-        })
       }
-      return
-    },
-  }),
+    } else {
+      return {
+        collection: (col: any) => {
+          if (col === 'block_states') {
+            return {
+              find: () => ({
+                limit: () => ({
+                  sort: () => ({
+                    toArray: () => [blockState],
+                  }),
+                }),
+                toArray: () => [blockState],
+              }),
+            }
+          } else if (col === 'action_traces') {
+            return ({
+              find: () => ({
+                sort: () => ({
+                  toArray: () => actionTraces,
+                }),
+              }),
+            })
+          }
+          return
+        },
+        collections: () => {
+          return [
+            {
+              collectionName: 'action_traces'
+            },
+            {
+              collectionName: 'block_states'
+            },
+          ]
+        }
+      }
+    }
+  }
 }

@@ -20,7 +20,7 @@ export class NodeosActionReader extends AbstractActionReader {
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
   ) {
-    super(startAtBlock, onlyIrreversible, maxHistoryLength)
+    super({startAtBlock, onlyIrreversible, maxHistoryLength})
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
 
     this.log = Logger.createLogger({ name: 'demux' })
@@ -76,6 +76,18 @@ export class NodeosActionReader extends AbstractActionReader {
       return block
     } catch (err) {
       throw new RetrieveBlockError()
+    }
+  }
+
+  protected async isSetUp(): Promise<boolean> {
+    try {
+      await request.get({
+        url: `${this.nodeosEndpoint}/v1/chain/get_info`,
+        json: true,
+      })
+      return true
+    } catch (err) {
+      return false
     }
   }
 }

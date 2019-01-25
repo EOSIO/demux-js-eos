@@ -16,8 +16,11 @@ import { retry } from './utils'
  * Implementation of an ActionReader that reads blocks from a mongodb instance.
  */
 export class MongoActionReader extends AbstractActionReader {
-  private mongodb: Db | null
   protected log: Logger
+
+  private mongodb: Db | null
+  private readonly requiredCollections: Set<string> = new Set(['action_traces', 'block_states'])
+
   constructor(
     protected mongoEndpoint: string = 'mongodb://127.0.0.1:27017',
     public startAtBlock: number = 1,
@@ -25,7 +28,7 @@ export class MongoActionReader extends AbstractActionReader {
     protected maxHistoryLength: number = 600,
     public dbName: string = 'EOS',
   ) {
-    super(startAtBlock, onlyIrreversible, maxHistoryLength)
+    super({ startAtBlock, onlyIrreversible, maxHistoryLength })
     this.mongodb = null
     this.log = Logger.createLogger({ name: 'demux' })
   }
@@ -101,6 +104,22 @@ export class MongoActionReader extends AbstractActionReader {
     } catch (err) {
       throw new RetrieveBlockError()
     }
+  }
+
+  protected async isSetUp(): Promise<boolean> {
+    this.throwIfNotInitialized()
+
+    const dbCollections = await this.mongodb!.collections()
+    if (dbCollections.length === 0) {
+      return false
+    }
+    for (const collection of dbCollections) {
+      if (!this.requiredCollections.has(collection.collectionName)) {
+        return false
+      }
+    }
+
+    return true
   }
 
   private throwIfNotInitialized() {

@@ -1,3 +1,4 @@
+import { NotSetUpError } from 'demux'
 import request from 'request-promise-native'
 import { NodeosActionReader } from './NodeosActionReader'
 import { nodeosRawBlock } from './testHelpers/nodeosRawBlock'
@@ -32,5 +33,12 @@ describe('NodeosActionReader', () => {
   it('gets block with correct block number', async () => {
     const block = await reader.getBlock(20)
     expect(block.blockInfo.blockNumber).toEqual(20)
+  })
+
+  it('throws if isSetUp false', async () => {
+    request.get = jest.fn(async () => { throw new Error() })
+    reader.getLastIrreversibleBlockNumber = jest.fn(() => blockInfo)
+    const result = reader.getNextBlock()
+    expect(result).rejects.toThrow(NotSetUpError)
   })
 })
