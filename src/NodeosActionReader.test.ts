@@ -1,4 +1,4 @@
-import { NotSetUpError } from 'demux'
+import { NotInitializedError } from 'demux'
 import request from 'request-promise-native'
 import { NodeosActionReader } from './NodeosActionReader'
 import { nodeosRawBlock } from './testHelpers/nodeosRawBlock'
@@ -39,6 +39,6 @@ describe('NodeosActionReader', () => {
     request.get = jest.fn(async () => { throw new Error() })
     reader.getLastIrreversibleBlockNumber = jest.fn(() => blockInfo)
     const result = reader.getNextBlock()
-    expect(result).rejects.toThrow(NotSetUpError)
+    expect(result).rejects.toThrow(NotInitializedError)
   })
 })

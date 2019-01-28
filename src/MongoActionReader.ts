@@ -2,9 +2,9 @@ import * as Logger from 'bunyan'
 import { AbstractActionReader } from 'demux'
 import { Db, MongoClient } from 'mongodb'
 import {
+  MongoNotInitializedError,
   MultipleBlockStateError,
   NoBlockStateFoundError,
-  NotInitializedError,
   RetrieveBlockError,
   RetrieveHeadBlockError,
   RetrieveIrreversibleBlockError,
@@ -33,9 +33,27 @@ export class MongoActionReader extends AbstractActionReader {
     this.log = Logger.createLogger({ name: 'demux' })
   }
 
-  public async initialize() {
+  public async initialize(): Promise<void> {
     const mongoInstance = await MongoClient.connect(this.mongoEndpoint, { useNewUrlParser: true })
     this.mongodb = await mongoInstance.db(this.dbName)
+
+    const dbCollections = await this.mongodb.collections()
+    if (dbCollections.length === 0) {
+      throw new MongoNotInitializedError('There are no collections in the mongodb database')
+    }
+
+    const missingCollections = []
+    for (const collection of dbCollections) {
+      if (!this.requiredCollections.has(collection.collectionName)) {
+        missingCollections.push(collection.collectionName)
+      }
+    }
+
+    if (missingCollections.length > 0) {
+      throw new MongoNotInitializedError(`The mongodb database is missing ${missingCollections.join(',')} collections`)
+    }
+
+    this.initialized = true
   }
 
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
@@ -106,25 +124,9 @@ export class MongoActionReader extends AbstractActionReader {
     }
   }
 
-  protected async isSetUp(): Promise<boolean> {
-    this.throwIfNotInitialized()
-
-    const dbCollections = await this.mongodb!.collections()
-    if (dbCollections.length === 0) {
-      return false
-    }
-    for (const collection of dbCollections) {
-      if (!this.requiredCollections.has(collection.collectionName)) {
-        return false
-      }
-    }
-
-    return true
-  }
-
   private throwIfNotInitialized() {
     if (!this.mongodb) {
-      throw new NotInitializedError()
+      throw new MongoNotInitializedError()
     }
   }
 

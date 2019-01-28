@@ -1,5 +1,5 @@
 import * as Logger from 'bunyan'
-import { AbstractActionReader } from 'demux'
+import { AbstractActionReader, NotInitializedError } from 'demux'
 import request from 'request-promise-native'
 import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from './errors'
 import { NodeosBlock } from './NodeosBlock'
@@ -79,15 +79,14 @@ export class NodeosActionReader extends AbstractActionReader {
     }
   }
 
-  protected async isSetUp(): Promise<boolean> {
+  protected async initialize(): Promise<void> {
     try {
       await request.get({
         url: `${this.nodeosEndpoint}/v1/chain/get_info`,
         json: true,
       })
-      return true
     } catch (err) {
-      return false
+      throw new NotInitializedError('Cannot reach supplied nodeos endpoint')
     }
   }
 }

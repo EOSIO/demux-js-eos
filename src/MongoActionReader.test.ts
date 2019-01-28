@@ -1,5 +1,5 @@
-import { NotSetUpError } from 'demux'
 import { MongoClient } from 'mongodb'
+import { MongoNotInitializedError } from './errors'
 import { MongoActionReader } from './MongoActionReader'
 import { mockConnect } from './testHelpers/mongoMock'
 
@@ -29,8 +29,7 @@ describe('MongoActionReader', () => {
 
   it('throws if isSetup false', async () => {
     const failedSetupReader = new MongoActionReader('mongodb://127.0.0.1:27017', 0, false, 600, 'failed')
-    await failedSetupReader.initialize()
     const result = failedSetupReader.getNextBlock()
-    expect(result).rejects.toThrow(NotSetUpError)
+    expect(result).rejects.toThrow(MongoNotInitializedError)
   })
 })
