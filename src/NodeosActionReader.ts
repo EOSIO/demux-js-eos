@@ -89,7 +89,7 @@ export class NodeosActionReader extends AbstractActionReader {
         json: true,
       })
     } catch (err) {
-      throw new NotInitializedError('Cannot reach supplied nodeos endpoint.')
+      throw new NotInitializedError('Cannot reach supplied nodeos endpoint.', err)
     }
   }
 }
