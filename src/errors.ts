@@ -21,17 +21,10 @@ export class RetrieveIrreversibleBlockError extends Error {
   }
 }
 
-export class NotInitializedError extends Error {
-  constructor() {
-    super('MongoActionReader must be initialized before fetching blocks.')
-    Object.setPrototypeOf(this, NotInitializedError.prototype)
-  }
-}
-
 export class NoBlockStateFoundError extends Error {
   constructor(blockNumber: number) {
     super(`No block state with block number ${blockNumber} found`)
-    Object.setPrototypeOf(this, NotInitializedError.prototype)
+    Object.setPrototypeOf(this, NoBlockStateFoundError.prototype)
   }
 }
 
@@ -39,6 +32,6 @@ export class MultipleBlockStateError extends Error {
   constructor(blockNumber: number) {
     super(`More than one block state returned for block number ${blockNumber}. ` +
           'Make sure you have the `--mongodb-update-via-block-num` flag set on your node.')
-    Object.setPrototypeOf(this, NotInitializedError.prototype)
+    Object.setPrototypeOf(this, MultipleBlockStateError.prototype)
   }
 }

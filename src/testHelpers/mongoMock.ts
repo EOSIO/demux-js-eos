@@ -19,39 +19,54 @@ const sortFunction = (a: any, b: any) => {
 }
 
 export const mockConnect = {
-  db: () => ({
-    collection: (col: any) => {
-      if (col === 'block_states') {
-        return {
-          find: (options: any) => ({
-            limit: () => ({
-              sort: () => {
-                const newBlockStates = deepCloneBlockStates(blockStates)
-                newBlockStates.sort(sortFunction)
-                return {
-                  toArray: () => [newBlockStates[0]],
-                }},
-            }),
-            toArray: () => {
-              for (const bState of blockStates) {
-                if (bState.block_num === options.block_num) {
-                  return [bState]
-                }
-              }
-              return []
-            },
-          }),
+  db: (name: string) => {
+    if (name === 'failed') {
+      return {
+        collections: () => {
+          return []
         }
-      } else if (col === 'action_traces') {
-        return ({
-          find: () => ({
-            sort: () => ({
-              toArray: () => actionTraces,
-            }),
-          }),
-        })
       }
-      return
-    },
-  }),
+    } else {
+      return {
+        collection: (col: any) => {
+          if (col === 'block_states') {
+            return {
+              find: (options: any) => ({
+                limit: () => ({
+                  sort: () => {
+                    const newBlockStates = deepCloneBlockStates(blockStates)
+                    newBlockStates.sort(sortFunction)
+                    return {
+                      toArray: () => [newBlockStates[0]],
+                    }
+                  },
+                }),
+                toArray: () => {
+                  for (const bState of blockStates) {
+                    if (bState.block_num === options.block_num) {
+                      return [bState]
+                    }
+                  }
+                  return []
+                },
+              }),
+            }
+          } else if (col === 'action_traces') {
+            return ({
+              find: () => ({
+                sort: () => ({
+                  toArray: () => actionTraces,
+                }),
+              }),
+            })
+          }
+          return
+        },
+        collections: () => ([
+            { collectionName: 'block_states' },
+            { collectionName: 'action_traces' },
+        ]),
+      }
+    }
+  },
 }

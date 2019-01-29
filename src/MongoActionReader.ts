@@ -1,10 +1,9 @@
 import * as Logger from 'bunyan'
-import { AbstractActionReader } from 'demux'
+import { AbstractActionReader, NotInitializedError } from 'demux'
 import { Db, MongoClient } from 'mongodb'
 import {
   MultipleBlockStateError,
   NoBlockStateFoundError,
-  NotInitializedError,
   RetrieveBlockError,
   RetrieveHeadBlockError,
   RetrieveIrreversibleBlockError,
@@ -16,8 +15,11 @@ import { retry } from './utils'
  * Implementation of an ActionReader that reads blocks from a mongodb instance.
  */
 export class MongoActionReader extends AbstractActionReader {
-  private mongodb: Db | null
   protected log: Logger
+
+  private mongodb: Db | null
+  private readonly requiredCollections: Set<string> = new Set(['action_traces', 'block_states'])
+
   constructor(
     protected mongoEndpoint: string = 'mongodb://127.0.0.1:27017',
     public startAtBlock: number = 1,
@@ -25,14 +27,9 @@ export class MongoActionReader extends AbstractActionReader {
     protected maxHistoryLength: number = 600,
     public dbName: string = 'EOS',
   ) {
-    super(startAtBlock, onlyIrreversible, maxHistoryLength)
+    super({startAtBlock, onlyIrreversible, maxHistoryLength})
     this.mongodb = null
     this.log = Logger.createLogger({ name: 'demux' })
-  }
-
-  public async initialize() {
-    const mongoInstance = await MongoClient.connect(this.mongoEndpoint, { useNewUrlParser: true })
-    this.mongodb = await mongoInstance.db(this.dbName)
   }
 
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
@@ -103,13 +100,38 @@ export class MongoActionReader extends AbstractActionReader {
     }
   }
 
-  private throwIfNotInitialized() {
+  protected async setup(): Promise<void> {
+    if (this.initialized) {
+      return
+    }
+
+    const mongoInstance = await MongoClient.connect(this.mongoEndpoint, { useNewUrlParser: true })
+    this.mongodb = await mongoInstance.db(this.dbName)
+
+    const dbCollections = await this.mongodb.collections()
+    if (dbCollections.length === 0) {
+      throw new NotInitializedError('There are no collections in the mongodb database.')
+    }
+
+    const missingCollections = []
+    for (const collection of dbCollections) {
+      if (!this.requiredCollections.has(collection.collectionName)) {
+        missingCollections.push(collection.collectionName)
+      }
+    }
+
+    if (missingCollections.length > 0) {
+      throw new NotInitializedError(`The mongodb database is missing ${missingCollections.join(', ')} collections.`)
+    }
+  }
+
+  private throwIfNotInitialized(): void {
     if (!this.mongodb) {
       throw new NotInitializedError()
     }
   }
 
-  private validateBlockStates(blockStates: any, blockNumber: number) {
+  private validateBlockStates(blockStates: any, blockNumber: number): void {
     if (blockStates.length === 0) {
       throw new NoBlockStateFoundError(blockNumber)
     } else if (blockStates.length > 1) {

@@ -1,5 +1,5 @@
 import * as Logger from 'bunyan'
-import { AbstractActionReader } from 'demux'
+import { AbstractActionReader, NotInitializedError } from 'demux'
 import request from 'request-promise-native'
 import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from './errors'
 import { NodeosBlock } from './NodeosBlock'
@@ -20,7 +20,7 @@ export class NodeosActionReader extends AbstractActionReader {
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
   ) {
-    super(startAtBlock, onlyIrreversible, maxHistoryLength)
+    super({startAtBlock, onlyIrreversible, maxHistoryLength})
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
 
     this.log = Logger.createLogger({ name: 'demux' })
@@ -76,6 +76,21 @@ export class NodeosActionReader extends AbstractActionReader {
       return block
     } catch (err) {
       throw new RetrieveBlockError()
+    }
+  }
+
+  protected async setup(): Promise<void> {
+    if (this.initialized) {
+      return
+    }
+
+    try {
+      await request.get({
+        url: `${this.nodeosEndpoint}/v1/chain/get_info`,
+        json: true,
+      })
+    } catch (err) {
+      throw new NotInitializedError('Cannot reach supplied nodeos endpoint.')
     }
   }
 }
