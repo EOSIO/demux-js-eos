@@ -1,3 +1,4 @@
+import { NotInitializedError } from 'demux'
 import request from 'request-promise-native'
 import { NodeosActionReader } from './NodeosActionReader'
 import { nodeosRawBlock } from './testHelpers/nodeosRawBlock'
@@ -16,7 +17,7 @@ describe('NodeosActionReader', () => {
   })
 
   beforeEach(() => {
-    reader = new NodeosActionReader('', 10, false, 600)
+    reader = new NodeosActionReader('', 10, false)
   })
 
   it('returns head block number', async () => {
@@ -32,5 +33,12 @@ describe('NodeosActionReader', () => {
   it('gets block with correct block number', async () => {
     const block = await reader.getBlock(20)
     expect(block.blockInfo.blockNumber).toEqual(20)
+  })
+
+  it('throws if not correctly initialized', async () => {
+    request.get = jest.fn(async () => { throw new Error('404: This page does not exist') })
+    reader.getLastIrreversibleBlockNumber = jest.fn(() => blockInfo)
+    const result = reader.getNextBlock()
+    expect(result).rejects.toThrow(NotInitializedError)
   })
 })
