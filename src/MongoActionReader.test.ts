@@ -14,16 +14,16 @@ describe('MongoActionReader', () => {
 
   it('returns the head block number', async () => {
     const blockNum = await reader.getHeadBlockNumber()
-    expect(blockNum).toEqual(21)
+    expect(blockNum).toEqual(4)
   })
 
   it('returns the last irreversible block number', async () => {
     const blockNum = await reader.getLastIrreversibleBlockNumber()
-    expect(blockNum).toEqual(20)
+    expect(blockNum).toEqual(3)
   })
 
   it('returns block with the expected block number', async () => {
-    const returnedBlock = await reader.getBlock(21)
-    expect(returnedBlock.blockInfo.blockNumber).toEqual(21)
+    const returnedBlock = await reader.getBlock(4)
+    expect(returnedBlock.blockInfo.blockNumber).toEqual(4)
   })
 })
