@@ -9,7 +9,7 @@ describe('MongoActionReader', () => {
   let reader: any
 
   beforeEach(async () => {
-    reader = new MongoActionReader('mongodb://127.0.0.1:27017', 0, false, 600, 'EOS')
+    reader = new MongoActionReader('mongodb://127.0.0.1:27017', 0, false, 'EOS')
     await reader.initialize()
   })
 
@@ -29,7 +29,7 @@ describe('MongoActionReader', () => {
   })
 
   it('throws if not correctly initialized', async () => {
-    const failedReader = new MongoActionReader('mongodb://127.0.0.1:27017', 0, false, 600, 'failed')
+    const failedReader = new MongoActionReader('mongodb://127.0.0.1:27017', 0, false, 'failed')
     const result = failedReader.getNextBlock()
     expect(result).rejects.toThrow(NotInitializedError)
   })

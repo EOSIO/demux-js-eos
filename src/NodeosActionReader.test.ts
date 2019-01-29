@@ -17,7 +17,7 @@ describe('NodeosActionReader', () => {
   })
 
   beforeEach(() => {
-    reader = new NodeosActionReader('', 10, false, 600)
+    reader = new NodeosActionReader('', 10, false)
   })
 
   it('returns head block number', async () => {

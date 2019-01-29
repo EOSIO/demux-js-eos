@@ -2,16 +2,7 @@ import { actionTraces } from './actionTraces'
 import { blockStates } from './blockStates'
 
 const deepCloneBlockStates = (bStates: any) => {
-  const newBStates: any[] = []
-  for (const bState of bStates) {
-    newBStates.push(deepCloneBlockState(bState))
-  }
-
-  return newBStates
-}
-
-const deepCloneBlockState = (bState: any) => {
-  return JSON.parse(JSON.stringify(bState))
+  return JSON.parse(JSON.stringify(bStates))
 }
 // Do a reverse sort
 const sortFunction = (a: any, b: any) => {

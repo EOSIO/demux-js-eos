@@ -24,10 +24,9 @@ export class MongoActionReader extends AbstractActionReader {
     protected mongoEndpoint: string = 'mongodb://127.0.0.1:27017',
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
-    protected maxHistoryLength: number = 600,
     public dbName: string = 'EOS',
   ) {
-    super({startAtBlock, onlyIrreversible, maxHistoryLength})
+    super({startAtBlock, onlyIrreversible})
     this.mongodb = null
     this.log = Logger.createLogger({ name: 'demux' })
   }

@@ -18,9 +18,8 @@ export class NodeosActionReader extends AbstractActionReader {
     nodeosEndpoint: string = 'http://localhost:8888',
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
-    protected maxHistoryLength: number = 600,
   ) {
-    super({startAtBlock, onlyIrreversible, maxHistoryLength})
+    super({startAtBlock, onlyIrreversible})
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
 
     this.log = Logger.createLogger({ name: 'demux' })
