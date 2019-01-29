@@ -33,7 +33,11 @@ export class MongoActionReader extends AbstractActionReader {
     this.log = Logger.createLogger({ name: 'demux' })
   }
 
-  public async initialize(): Promise<void> {
+  protected async setup(): Promise<void> {
+    if (this.initialized) {
+      return
+    }
+
     const mongoInstance = await MongoClient.connect(this.mongoEndpoint, { useNewUrlParser: true })
     this.mongodb = await mongoInstance.db(this.dbName)
 
@@ -52,8 +56,6 @@ export class MongoActionReader extends AbstractActionReader {
     if (missingCollections.length > 0) {
       throw new MongoNotInitializedError(`The mongodb database is missing ${missingCollections.join(',')} collections`)
     }
-
-    this.initialized = true
   }
 
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {
@@ -132,8 +134,10 @@ export class MongoActionReader extends AbstractActionReader {
 
   private validateBlockStates(blockStates: any, blockNumber: number) {
     if (blockStates.length === 0) {
+      console.log('here??')
       throw new NoBlockStateFoundError(blockNumber)
     } else if (blockStates.length > 1) {
+      console.log('here>>')
       throw new MultipleBlockStateError(blockNumber)
     }
   }

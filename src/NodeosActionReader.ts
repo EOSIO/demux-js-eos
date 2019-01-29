@@ -79,7 +79,11 @@ export class NodeosActionReader extends AbstractActionReader {
     }
   }
 
-  protected async initialize(): Promise<void> {
+  protected async setup(): Promise<void> {
+    if (this.initialized) {
+      return
+    }
+
     try {
       await request.get({
         url: `${this.nodeosEndpoint}/v1/chain/get_info`,

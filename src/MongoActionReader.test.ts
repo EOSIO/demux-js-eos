@@ -9,22 +9,24 @@ describe('MongoActionReader', () => {
   beforeEach(async () => {
     MongoClient.connect = jest.fn(() => mockConnect)
     reader = new MongoActionReader('mongodb://127.0.0.1:27017', 0, false, 600, 'EOS')
-    await reader.initialize()
   })
 
   it('returns the head block number', async () => {
+    await reader.initialize()
     const blockNum = await reader.getHeadBlockNumber()
     expect(blockNum).toEqual(21)
   })
 
   it('returns the last irreversible block number', async () => {
+    await reader.initialize()
     const blockNum = await reader.getLastIrreversibleBlockNumber()
-    expect(blockNum).toEqual(20)
+    expect(blockNum).toEqual(2)
   })
 
   it('returns block with the expected block number', async () => {
-    const returnedBlock = await reader.getBlock(21)
-    expect(returnedBlock.blockInfo.blockNumber).toEqual(21)
+    await reader.initialize()
+    const returnedBlock = await reader.getBlock(3)
+    expect(returnedBlock.blockInfo.blockNumber).toEqual(3)
   })
 
   it('throws if isSetup false', async () => {
