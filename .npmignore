@@ -10,6 +10,7 @@ src/
 .npmrc.template
 .nvmrc
 .travis.yml
+__mocks__
 CONTRIBUTING.md
 README.md
 tsconfig.json
