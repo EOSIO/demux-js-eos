@@ -13,8 +13,8 @@
   "devDependencies": {
     "@blockone/tslint-config-blockone": "^1.0.0",
     "@types/bunyan": "^1.8.5",
-    "@types/massive": "^5.4.1",
     "@types/jest": "^23.1.4",
+    "@types/massive": "^5.4.1",
     "@types/mongodb": "^3.1.4",
     "@types/node": "^10.5.1",
     "@types/node-fetch": "^2.1.6",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "bunyan": "^1.8.12",
-    "demux": "^3.1.4-4e7af11.0",
+    "demux": "^3.1.4-8cfe8c1.0",
     "eosjs": "^20.0.0-beta3",
     "massive": "^5.7.5",
     "mongodb": "^3.1.3",
