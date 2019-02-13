@@ -1,5 +1,5 @@
+import { nodeosRawBlock } from '../testHelpers/nodeosRawBlock'
 import { NodeosBlock } from './NodeosBlock'
-import { nodeosRawBlock } from './testHelpers/nodeosRawBlock'
 
 describe('NodeosBlock', () => {
   let eosBlock: NodeosBlock
