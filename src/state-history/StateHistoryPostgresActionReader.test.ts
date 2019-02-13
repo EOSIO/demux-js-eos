@@ -5,7 +5,6 @@ describe('StateHistoryPostgresActionReader', () => {
   beforeEach(async () => {
     reader = new StateHistoryPostgresActionReader(
       {},
-      '',
       {
         host: 'localhost',
         port: 5432,
