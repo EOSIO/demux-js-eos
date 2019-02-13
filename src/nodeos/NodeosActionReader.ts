@@ -1,9 +1,9 @@
 import * as Logger from 'bunyan'
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import request from 'request-promise-native'
-import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from './errors'
+import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from '../errors'
+import { retry } from '../utils'
 import { NodeosBlock } from './NodeosBlock'
-import { retry } from './utils'
 
 /**
  * Reads from an EOSIO nodeos node to get blocks of actions.

@@ -7,9 +7,9 @@ import {
   RetrieveBlockError,
   RetrieveHeadBlockError,
   RetrieveIrreversibleBlockError,
-} from './errors'
+} from '../errors'
+import { retry } from '../utils'
 import { MongoBlock } from './MongoBlock'
-import { retry } from './utils'
 
 /**
  * Implementation of an ActionReader that reads blocks from a mongodb instance.

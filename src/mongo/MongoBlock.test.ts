@@ -1,5 +1,5 @@
+import { mongoBlockState, mongoRawActions } from '../testHelpers/mongoObjectMocks'
 import { MongoBlock } from './MongoBlock'
-import { mongoBlockState, mongoRawActions } from './testHelpers/mongoObjectMocks'
 
 describe('MongoBlock', () => {
   let mongoBlock: any

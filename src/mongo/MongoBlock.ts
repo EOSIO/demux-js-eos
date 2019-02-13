@@ -1,5 +1,5 @@
 import { Block, BlockInfo } from 'demux'
-import { EosAction } from './interfaces'
+import { EosAction } from '../interfaces'
 
 export class MongoBlock implements Block {
   public actions: EosAction[]

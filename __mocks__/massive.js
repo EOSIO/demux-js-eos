@@ -1,6 +1,12 @@
 const massive = () => {
   return {
     chain: {
+      account: {
+        findOne: () => ({
+          account_name: 'test',
+          abi: [10, 11, 12],
+        }),
+      },
       fill_status: {
         findOne: () => ({
           head: 4,
