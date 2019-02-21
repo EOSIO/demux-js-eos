@@ -17,7 +17,6 @@ import { MongoBlock } from './MongoBlock'
  */
 export class MongoActionReader extends AbstractActionReader {
   public dbName: string
-  protected log: Logger
   protected mongoEndpoint: string
   private readonly requiredCollections: Set<string> = new Set(['action_traces', 'block_states'])
   private mongodb: Db | null

@@ -13,7 +13,6 @@ import { NodeosBlock } from './NodeosBlock'
  */
 export class NodeosActionReader extends AbstractActionReader {
   protected nodeosEndpoint: string
-  protected log: Logger
 
   constructor(options: NodeosActionReaderOptions = {}) {
     super(options)
