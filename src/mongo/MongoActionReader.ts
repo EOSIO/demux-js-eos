@@ -27,7 +27,6 @@ export class MongoActionReader extends AbstractActionReader {
     this.mongoEndpoint = options.mongoEndpoint ? options.mongoEndpoint : 'mongodb://127.0.0.1:27017'
     this.dbName = options.dbName ? options.dbName : 'EOS'
     this.mongodb = null
-    this.log = Logger.createLogger({ name: 'demux' })
   }
 
   public async getHeadBlockNumber(numRetries: number = 120, waitTimeMs: number = 250): Promise<number> {

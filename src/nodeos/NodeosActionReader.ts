@@ -19,7 +19,6 @@ export class NodeosActionReader extends AbstractActionReader {
     super(options)
     const nodeosEndpoint = options.nodeosEndpoint ? options.nodeosEndpoint : 'http://localhost:8888'
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
-    this.log = Logger.createLogger({ name: 'demux' })
   }
 
   /**
