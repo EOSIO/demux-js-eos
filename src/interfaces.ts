@@ -4,6 +4,11 @@ export interface NodeosActionReaderOptions extends ActionReaderOptions {
   nodeosEndpoint?: string
 }
 
+export interface MongoActionReaderOptions extends ActionReaderOptions {
+  mongoEndpoint?: string
+  dbName?: string
+}
+
 export interface EosAuthorization {
   actor: string
   permission: string

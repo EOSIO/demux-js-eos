@@ -8,6 +8,7 @@ import {
   RetrieveHeadBlockError,
   RetrieveIrreversibleBlockError,
 } from '../errors'
+import { MongoActionReaderOptions } from '../interfaces'
 import { retry } from '../utils'
 import { MongoBlock } from './MongoBlock'
 
@@ -15,18 +16,19 @@ import { MongoBlock } from './MongoBlock'
  * Implementation of an ActionReader that reads blocks from a mongodb instance.
  */
 export class MongoActionReader extends AbstractActionReader {
+  public dbName: string
   protected log: Logger
-
-  private mongodb: Db | null
+  protected mongoEndpoint: string
   private readonly requiredCollections: Set<string> = new Set(['action_traces', 'block_states'])
+  private mongodb: Db | null
 
-  constructor(
-    protected mongoEndpoint: string = 'mongodb://127.0.0.1:27017',
-    public startAtBlock: number = 1,
-    protected onlyIrreversible: boolean = false,
-    public dbName: string = 'EOS',
-  ) {
-    super({startAtBlock, onlyIrreversible})
+  constructor(options: MongoActionReaderOptions = {}) {
+    super({
+      startAtBlock: options.startAtBlock,
+      onlyIrreversible: options.onlyIrreversible
+    })
+    this.mongoEndpoint = options.mongoEndpoint ? options.mongoEndpoint : 'mongodb://127.0.0.1:27017'
+    this.dbName = options.dbName ? options.dbName : 'EOS'
     this.mongodb = null
     this.log = Logger.createLogger({ name: 'demux' })
   }
