@@ -1,4 +1,3 @@
-import * as Logger from 'bunyan'
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import { Db, MongoClient } from 'mongodb'
 import {

@@ -1,4 +1,3 @@
-import * as Logger from 'bunyan'
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import request from 'request-promise-native'
 import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from '../errors'
