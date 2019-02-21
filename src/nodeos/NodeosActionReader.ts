@@ -16,14 +16,9 @@ export class NodeosActionReader extends AbstractActionReader {
   protected log: Logger
 
   constructor(options: NodeosActionReaderOptions = {}) {
-    super({
-      startAtBlock: options.startAtBlock,
-      onlyIrreversible: options.onlyIrreversible
-    })
-
+    super(options)
     const nodeosEndpoint = options.nodeosEndpoint ? options.nodeosEndpoint : 'http://localhost:8888'
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
-
     this.log = Logger.createLogger({ name: 'demux' })
   }
 

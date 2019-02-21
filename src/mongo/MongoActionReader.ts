@@ -23,10 +23,7 @@ export class MongoActionReader extends AbstractActionReader {
   private mongodb: Db | null
 
   constructor(options: MongoActionReaderOptions = {}) {
-    super({
-      startAtBlock: options.startAtBlock,
-      onlyIrreversible: options.onlyIrreversible
-    })
+    super(options)
     this.mongoEndpoint = options.mongoEndpoint ? options.mongoEndpoint : 'mongodb://127.0.0.1:27017'
     this.dbName = options.dbName ? options.dbName : 'EOS'
     this.mongodb = null
