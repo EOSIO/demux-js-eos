@@ -1,17 +1,18 @@
-import { AbstractActionReader, ActionReaderOptions, NotInitializedError } from 'demux'
+import { AbstractActionReader, NotInitializedError } from 'demux'
 import massive from 'massive'
+import { StateHistoryPostgresActionReaderOptions } from '../interfaces'
 import { StateHistoryPostgresBlock } from './StateHistoryPostgresBlock'
 
 export class StateHistoryPostgresActionReader extends AbstractActionReader {
   private db: any
   private massiveInstance: massive.Database | null = null
+  private massiveConfig: any
+  private dbSchema: string
 
-  constructor(
-    options: ActionReaderOptions,
-    private massiveConfig: any,
-    private dbSchema: string = 'chain',
-  ) {
+  constructor(options: StateHistoryPostgresActionReaderOptions) {
     super(options)
+    this.massiveConfig = options.massiveConfig
+    this.dbSchema = options.dbSchema ? options.dbSchema : 'chain'
   }
 
   public async getHeadBlockNumber(): Promise<number> {

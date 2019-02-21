@@ -9,6 +9,11 @@ export interface MongoActionReaderOptions extends ActionReaderOptions {
   dbName?: string
 }
 
+export interface StateHistoryPostgresActionReaderOptions extends ActionReaderOptions {
+  massiveConfig: any
+  dbSchema?: string
+}
+
 export interface EosAuthorization {
   actor: string
   permission: string
