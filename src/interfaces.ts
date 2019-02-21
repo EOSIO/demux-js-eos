@@ -1,4 +1,8 @@
-import { Action } from 'demux'
+import { Action, ActionReaderOptions } from 'demux'
+
+export interface NodeosActionReaderOptions extends ActionReaderOptions {
+  nodeosEndpoint?: string
+}
 
 export interface EosAuthorization {
   actor: string

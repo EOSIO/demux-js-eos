@@ -4,6 +4,7 @@ import request from 'request-promise-native'
 import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from '../errors'
 import { retry } from '../utils'
 import { NodeosBlock } from './NodeosBlock'
+import { NodeosActionReaderOptions } from '../interfaces'
 
 /**
  * Reads from an EOSIO nodeos node to get blocks of actions.
@@ -14,12 +15,13 @@ export class NodeosActionReader extends AbstractActionReader {
   protected nodeosEndpoint: string
   protected log: Logger
 
-  constructor(
-    nodeosEndpoint: string = 'http://localhost:8888',
-    public startAtBlock: number = 1,
-    protected onlyIrreversible: boolean = false,
-  ) {
-    super({startAtBlock, onlyIrreversible})
+  constructor(options: NodeosActionReaderOptions = {}) {
+    super({
+      startAtBlock: options.startAtBlock,
+      onlyIrreversible: options.onlyIrreversible
+    })
+
+    const nodeosEndpoint = options.nodeosEndpoint ? options.nodeosEndpoint : 'http://localhost:8888'
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
 
     this.log = Logger.createLogger({ name: 'demux' })
