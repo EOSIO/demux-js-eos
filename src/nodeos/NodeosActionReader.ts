@@ -1,7 +1,7 @@
-import * as Logger from 'bunyan'
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import request from 'request-promise-native'
 import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from '../errors'
+import { NodeosActionReaderOptions } from '../interfaces'
 import { retry } from '../utils'
 import { NodeosBlock } from './NodeosBlock'
 
@@ -12,17 +12,11 @@ import { NodeosBlock } from './NodeosBlock'
  */
 export class NodeosActionReader extends AbstractActionReader {
   protected nodeosEndpoint: string
-  protected log: Logger
 
-  constructor(
-    nodeosEndpoint: string = 'http://localhost:8888',
-    public startAtBlock: number = 1,
-    protected onlyIrreversible: boolean = false,
-  ) {
-    super({startAtBlock, onlyIrreversible})
+  constructor(options: NodeosActionReaderOptions = {}) {
+    super(options)
+    const nodeosEndpoint = options.nodeosEndpoint ? options.nodeosEndpoint : 'http://localhost:8888'
     this.nodeosEndpoint = nodeosEndpoint.replace(/\/+$/g, '') // Removes trailing slashes
-
-    this.log = Logger.createLogger({ name: 'demux' })
   }
 
   /**

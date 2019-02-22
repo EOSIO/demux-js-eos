@@ -3,17 +3,16 @@ import { StateHistoryPostgresActionReader } from './StateHistoryPostgresActionRe
 describe('StateHistoryPostgresActionReader', () => {
   let reader: any
   beforeEach(async () => {
-    reader = new StateHistoryPostgresActionReader(
-      {},
-      {
+    reader = new StateHistoryPostgresActionReader({
+      massiveConfig: {
         host: 'localhost',
         port: 5432,
         database: 'statehistory',
         user: 'docker',
         password: 'docker'
       },
-      'chain'
-    )
+      dbSchema: 'chain',
+    })
 
     await reader.setup()
   })
