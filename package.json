@@ -11,14 +11,14 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@blockone/tslint-config-blockone": "^1.0.0",
     "@types/bunyan": "^1.8.5",
     "@types/jest": "^23.1.4",
-    "@types/massive": "^5.4.1",
     "@types/mongodb": "^3.1.4",
     "@types/node": "^10.5.1",
-    "@types/node-fetch": "^2.1.6",
     "@types/request-promise-native": "^1.0.15",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-plugin-import": "^2.7.0",
     "jest": "^22.4.3",
     "release-it": "^7.5.0",
     "ts-jest": "^23.0.0",
@@ -29,11 +29,8 @@
   },
   "dependencies": {
     "bunyan": "^1.8.12",
-    "demux": "^3.1.4-8cfe8c1.0",
-    "eosjs": "^20.0.0-beta3",
-    "massive": "^5.7.5",
+    "demux": "^3.1.3",
     "mongodb": "^3.1.3",
-    "node-fetch": "^2.3.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
@@ -45,9 +42,9 @@
     "compile": "tsc",
     "build": "tsc",
     "watch": "tsc -w",
-    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "lint": "tslint -c tslint.json src/**/*.ts",
     "test": "jest",
-    "build-docs": "./scripts/build-docs.sh",
+    "build-docs": "./build-docs.sh",
     "current-version": "echo $npm_package_version"
   },
   "jest": {
