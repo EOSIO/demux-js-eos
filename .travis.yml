@@ -1,42 +1,44 @@
 sudo: false
 language: node_js
 node_js:
-  - '10.0.0'
+- 10.0.0
 before_install:
-  - npm i -g npm@6.4.1
-  - npm install -g typescript
+- npm i -g npm@6.4.1
+- npm install -g typescript
 stages:
-  - test
-  - name: publish-edge
-    if: (NOT type IN (pull_request)) AND (branch = develop)
-  - name: publish-latest
-    # Travis assigns the tag to branch for some reason. This matches any valid semver version.
-    if: branch =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
+- test
+- name: publish-edge
+  if: "(NOT type IN (pull_request)) AND (branch = develop)"
+- name: publish-latest
+  if: branch =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
 jobs:
   include:
-    - stage: test
-      name: "Lint and Test"
-      script:
-        - npm run lint
-        - npm run test
-    - stage: publish-edge
-      name: "Publish @edge to NPM"
-      script:
-        - npm run build
-      deploy:
-        provider: script
-        skip_cleanup: true
-        script: ./scripts/publish-edge.sh
-        on:
-          branch: develop
-    - stage: publish-latest
-      name: "Publish @latest to NPM"
-      script:
-        - npm run build
-      deploy:
-        provider: script
-        skip_cleanup: true
-        script: ./scripts/publish-latest.sh
-        on:
-          all_branches: true
-          condition: $TRAVIS_TAG =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
+  - stage: test
+    name: Lint and Test
+    script:
+    - npm run lint
+    - npm run test
+  - stage: publish-edge
+    name: Publish @edge to NPM
+    script:
+    - npm run build
+    deploy:
+      provider: script
+      skip_cleanup: true
+      script: "./scripts/publish-edge.sh"
+      on:
+        branch: develop
+  - stage: publish-latest
+    name: Publish @latest to NPM
+    script:
+    - npm run build
+    deploy:
+      provider: script
+      skip_cleanup: true
+      script: "./scripts/publish-latest.sh"
+      on:
+        all_branches: true
+        condition: "$TRAVIS_TAG =~ ^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+notifications:
+  webhooks:
+    secure: ji2Jmd5PZb0/4hTxcCPQDTaVVNWvY09VFN/q2jXxBlYd/h6QyXB4pDfEm+gm6O3kLMZrL/k+75HzlVf9UYRrHd1CO85Rj5nrqImgCwdxYbmPRnehdwgoAknz6+A8+CZRIphcxXyFKOw4Q5Fvs4WXlCu4vWeE/vbv1rY3bH22Iv8lmeddaAk5i61ReppZK+JiYXhSQwhpNWWWRpCFDw87jawujuXe3ToppSkJ0C3v/oaKg9+ngIbZ0skDqe2cD/Ia7AvSynyyemHRY3AJ/t+ekXAY3rnP4wvdMZ0A0mfRGOq2yzkZBtUa3vG4WrseoNz3K8z1uDDqQLEUEb14SitNd4NXIdYXEUG1suM0AoEszAjcDt7r3ddv7J6f3cJ8qxTLLXj6Qf7Ceee/AEU54CsJkIamG9PL2HQky4GnXsqNCOgpwivedYcFoEPiUmbz3Pcz8aR8LvnE7RH/IImUiMODhIwR0nMH6etARk+j3D5XyFeHzVkjYyg0P9gEo54vl/4T9Op4lQQJ63mqhPGvELNij5nrTLxIGSWsiz3LFn/ranDLUN1sSoCl8X3yXOWAfRxr/Q3Tg7/gvqLDov0HNfTXQ45cDuAVxP0SlZwwsqMYFAU0+rPd8alLEMVxhGztezfZNA2mYhs5bxofy83UpnkvR6t7gNuarW+UTJXQZRZtVzU=
