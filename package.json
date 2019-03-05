@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@blockone/tslint-config-blockone": "^1.0.0",
+    "@blockone/tslint-config-blockone": "^2.0.0",
     "@types/bunyan": "^1.8.5",
     "@types/jest": "23.3.13",
     "@types/massive": "^5.4.1",
