@@ -41,6 +41,6 @@ describe('MongoActionReader', () => {
       dbName: 'failed',
     })
     const result = failedReader.getNextBlock()
-    expect(result).rejects.toThrow(NotInitializedError)
+    await expect(result).rejects.toThrow(NotInitializedError)
   })
 })
