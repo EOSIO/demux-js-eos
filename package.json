@@ -13,14 +13,14 @@
   "devDependencies": {
     "@blockone/tslint-config-blockone": "^1.0.0",
     "@types/bunyan": "^1.8.5",
-    "@types/jest": "^23.1.4",
+    "@types/jest": "23.3.13",
     "@types/massive": "^5.4.1",
     "@types/mongodb": "^3.1.4",
     "@types/node": "^10.5.1",
     "@types/node-fetch": "^2.1.6",
     "@types/request-promise-native": "^1.0.15",
-    "jest": "^22.4.3",
-    "ts-jest": "^23.0.0",
+    "jest": "23.6.0",
+    "ts-jest": "23.10.5",
     "tslint": "^5.10.0",
     "tslint-eslint-rules": "^5.3.1",
     "typedoc": "^0.11.1",
@@ -39,6 +39,9 @@
   },
   "peerDependencies": {
     "demux": "4.0.0"
+  },
+  "resolutions": {
+    "*/merge": "1.2.1"
   },
   "scripts": {
     "build": "rm -rf dist/* && tsc",
