@@ -1,6 +1,6 @@
 import { Block, BlockInfo } from 'demux'
 import { Api, JsonRpc } from 'eosjs'
-import JsSignatureProvider from 'eosjs/dist/eosjs-jssig'
+import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import fetch from 'node-fetch'
 import { TextDecoder, TextEncoder } from 'util'
 import { EosAction } from '../interfaces'

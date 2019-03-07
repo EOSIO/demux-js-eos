@@ -43,6 +43,6 @@ describe('NodeosActionReader', () => {
     request.get = jest.fn(async () => { throw new Error('404: This page does not exist') })
     reader.getLastIrreversibleBlockNumber = jest.fn(() => blockInfo)
     const result = reader.getNextBlock()
-    expect(result).rejects.toThrow(NotInitializedError)
+    await expect(result).rejects.toThrow(NotInitializedError)
   })
 })

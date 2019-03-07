@@ -13,9 +13,10 @@ export const mockConnect = {
   db: (name: string) => {
     if (name === 'failed') {
       return {
-        collections: () => {
-          return []
-        }
+        collections: () => ([
+          { collectionName: 'block_states' },
+          { collectionName: '1234' },
+        ]),
       }
     } else {
       return {
@@ -54,8 +55,10 @@ export const mockConnect = {
           return
         },
         collections: () => ([
-            { collectionName: 'block_states' },
-            { collectionName: 'action_traces' },
+          { collectionName: 'block_states' },
+          { collectionName: 'action_traces' },
+          { collectionName: 'testing' },
+          { collectionName: '987123' },
         ]),
       }
     }

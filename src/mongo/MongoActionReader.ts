@@ -17,7 +17,7 @@ import { MongoBlock } from './MongoBlock'
 export class MongoActionReader extends AbstractActionReader {
   public dbName: string
   protected mongoEndpoint: string
-  private readonly requiredCollections: Set<string> = new Set(['action_traces', 'block_states'])
+  private readonly requiredCollections: string[] = ['action_traces', 'block_states']
   private mongodb: Db | null
 
   constructor(options: MongoActionReaderOptions = {}) {
@@ -108,10 +108,12 @@ export class MongoActionReader extends AbstractActionReader {
       throw new NotInitializedError('There are no collections in the mongodb database.')
     }
 
+    const dbCollectionsSet = new Set(dbCollections.map((c) => c.collectionName))
+
     const missingCollections = []
-    for (const collection of dbCollections) {
-      if (!this.requiredCollections.has(collection.collectionName)) {
-        missingCollections.push(collection.collectionName)
+    for (const collection of this.requiredCollections) {
+      if (!dbCollectionsSet.has(collection)) {
+        missingCollections.push(collection)
       }
     }
 
