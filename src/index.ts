@@ -1,4 +1,5 @@
 export { EosAction, EosAuthorization, EosPayload } from './interfaces'
-export * from './mongo'
-export * from './nodeos'
+export * from './handlers/massiveeos'
+export * from './readers/mongo'
+export * from './readers/nodeos'
 export * from './state-history'
