@@ -1,4 +1,4 @@
-import { nodeosRawBlock } from '../testHelpers/nodeosRawBlock'
+import { nodeosRawBlock } from '../../testHelpers/nodeosRawBlock'
 import { NodeosBlock } from './NodeosBlock'
 
 describe('NodeosBlock', () => {

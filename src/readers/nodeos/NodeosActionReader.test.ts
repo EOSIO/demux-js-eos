@@ -1,6 +1,6 @@
 import { NotInitializedError } from 'demux'
 import request from 'request-promise-native'
-import { nodeosRawBlock } from '../testHelpers/nodeosRawBlock'
+import { nodeosRawBlock } from '../../testHelpers/nodeosRawBlock'
 import { NodeosActionReader } from './NodeosActionReader'
 
 describe('NodeosActionReader', () => {

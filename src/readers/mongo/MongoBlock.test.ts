@@ -1,4 +1,4 @@
-import { mongoBlockState, mongoRawActions } from '../testHelpers/mongoObjectMocks'
+import { mongoBlockState, mongoRawActions } from '../../testHelpers/mongoObjectMocks'
 import { MongoBlock } from './MongoBlock'
 
 describe('MongoBlock', () => {
