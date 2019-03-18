@@ -12,9 +12,6 @@ export class MassiveEosActionHandler extends MassiveActionHandler {
   }
 
   /**
-   * This method is used when matching the types of incoming actions against the types the `Updater`s and `Effect`s are
-   * subscribed to. When this returns true, their corresponding functions will run.
-   *
    * By default, this method tests for direct equivalence between the incoming candidate type and the type that is
    * subscribed. Override this method to extend this functionality (e.g. wildcards).
    *
