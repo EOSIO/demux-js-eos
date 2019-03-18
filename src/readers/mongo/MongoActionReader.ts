@@ -6,9 +6,9 @@ import {
   RetrieveBlockError,
   RetrieveHeadBlockError,
   RetrieveIrreversibleBlockError,
-} from '../errors'
-import { MongoActionReaderOptions } from '../interfaces'
-import { retry } from '../utils'
+} from '../../errors'
+import { MongoActionReaderOptions } from '../../interfaces'
+import { retry } from '../../utils'
 import { MongoBlock } from './MongoBlock'
 
 /**

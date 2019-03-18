@@ -1,8 +1,12 @@
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import request from 'request-promise-native'
-import { RetrieveBlockError, RetrieveHeadBlockError, RetrieveIrreversibleBlockError } from '../errors'
-import { NodeosActionReaderOptions } from '../interfaces'
-import { retry } from '../utils'
+import {
+  RetrieveBlockError,
+  RetrieveHeadBlockError,
+  RetrieveIrreversibleBlockError
+} from '../../errors'
+import { NodeosActionReaderOptions } from '../../interfaces'
+import { retry } from '../../utils'
 import { NodeosBlock } from './NodeosBlock'
 
 /**

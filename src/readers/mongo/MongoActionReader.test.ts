@@ -1,6 +1,6 @@
 import { NotInitializedError } from 'demux'
 import { MongoClient } from 'mongodb'
-import { mockConnect } from '../testHelpers/mongoMock'
+import { mockConnect } from '../../testHelpers/mongoMock'
 import { MongoActionReader } from './MongoActionReader'
 
 MongoClient.connect = jest.fn(() => mockConnect)
