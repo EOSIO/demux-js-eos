@@ -41,7 +41,7 @@ export class StateHistoryPostgresBlock implements Block {
     })
 
     this.blockInfo = {
-      blockNumber: blockInfo.block_index,
+      blockNumber: Number(blockInfo.block_index),
       blockHash: blockInfo.block_id,
       previousBlockHash: blockInfo.previous,
       timestamp: blockInfo.timestamp,

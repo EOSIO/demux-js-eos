@@ -57,4 +57,29 @@ describe('StateHistoryPostgresBlock', () => {
       }
     }])
   })
+
+  it('handles blockNumber as string', async () => {
+    stateHistoryPostgresBlock = new StateHistoryPostgresBlock(
+      {
+        block_index: "4",
+        block_id: 'qwerty1234',
+        previous: 'qwerty1233',
+        timestamp: new Date('2018-08-12').toString(),
+      },
+      [{
+        account: 'token',
+        action_index: 1,
+        transaction_id: '12345',
+        receipt_receiver: 'userbbbbbbbb',
+        name: 'transfer',
+        actor: 'useraaaaaaaa',
+        permission: 'active',
+        data: [100, 100, 100, 100, 100, 100, 100],
+      }],
+      {},
+    )
+    await stateHistoryPostgresBlock.parseActions()
+
+    expect(stateHistoryPostgresBlock.blockInfo.blockNumber).toEqual(4);
+  })
 })
