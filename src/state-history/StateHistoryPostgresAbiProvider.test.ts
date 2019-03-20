@@ -8,7 +8,7 @@ describe('StateHistoryPostgresAbiProvider', () => {
       chain: {
         account: {
           findOne: () => ({
-            account_name: 'test',
+            name: 'test',
             abi: [10, 11, 12],
           }),
         },
