@@ -17,12 +17,12 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
 
   public async getHeadBlockNumber(): Promise<number> {
     const statusRow = await this.db.fill_status.findOne()
-    return statusRow.head
+    return parseInt(statusRow.head)
   }
 
   public async getLastIrreversibleBlockNumber(): Promise<number> {
     const statusRow = await this.db.fill_status.findOne()
-    return statusRow.irreversible
+    return parseInt(statusRow.irreversible)
   }
 
   public async getBlock(blockNumber: number): Promise<StateHistoryPostgresBlock> {
