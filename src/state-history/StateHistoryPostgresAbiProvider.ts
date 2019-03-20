@@ -11,10 +11,10 @@ export class StateHistoryPostgresAbiProvider implements ApiInterfaces.AbiProvide
   }
 
   public async getRawAbi(accountName: string): Promise<ApiInterfaces.BinaryAbi> {
-    const accountRow = this.db.account.findOne({ account_name: accountName })
+    const accountRow = await this.db.account.findOne({ name: accountName })
 
     const binaryAbi: ApiInterfaces.BinaryAbi = {
-      accountName: accountRow.account_name,
+      accountName: accountRow.name,
       abi: accountRow.abi,
     }
 
