@@ -6,7 +6,8 @@ export class MongoBlock implements Block {
   public blockInfo: BlockInfo
 
   constructor(blockState: any, rawActions: any) {
-    this.actions = this.parseActions(rawActions)
+    const producer = blockState.block_header_state.header.producer
+    this.actions = this.parseActions(rawActions, producer)
     this.blockInfo = {
       blockNumber: blockState.block_num,
       blockHash: blockState.block_id,
@@ -15,7 +16,7 @@ export class MongoBlock implements Block {
     }
   }
 
-  protected parseActions(rawActions: any): EosAction[] {
+  protected parseActions(rawActions: any, producer: string): EosAction[] {
     const eosActions = []
     let currentTx = ''
     let actionIndex = 0
@@ -38,6 +39,7 @@ export class MongoBlock implements Block {
           authorization: rawAction.act.authorization,
           data: rawAction.act.data,
           name: rawAction.act.name,
+          producer,
           transactionId: rawAction.trx_id,
           notifiedAccounts: [rawAction.receipt.receiver],
         },
