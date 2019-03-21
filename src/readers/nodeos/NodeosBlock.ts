@@ -15,6 +15,7 @@ export class NodeosBlock implements Block {
   }
 
   protected collectActionsFromBlock(rawBlock: any): EosAction[] {
+    const producer = rawBlock.producer
     return this.flattenArray(rawBlock.transactions.map((transaction: any) => {
       if (!transaction.trx.transaction) {
         return [] // Deferred transaction, cannot decode
@@ -24,14 +25,17 @@ export class NodeosBlock implements Block {
         if (action.data) {
           delete action.hex_data // eslint-disable-line
         }
-        return {
+        const block = {
           type: `${action.account}::${action.name}`,
           payload: {
+            producer,
             transactionId: transaction.trx.id,
             actionIndex,
             ...action,
           },
         }
+
+        return block
       })
     }))
   }

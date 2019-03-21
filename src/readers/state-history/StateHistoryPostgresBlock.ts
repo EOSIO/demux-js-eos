@@ -3,7 +3,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import fetch from 'node-fetch'
 import { TextDecoder, TextEncoder } from 'util'
-import { EosAction } from '../interfaces'
+import { EosAction } from '../../interfaces'
 import { StateHistoryPostgresAbiProvider } from './StateHistoryPostgresAbiProvider'
 
 // Wrapper to deal with differences between the definitions of fetch for the browser built-in
@@ -60,6 +60,8 @@ export class StateHistoryPostgresBlock implements Block {
         data: actionTrace.data,
       }
 
+      const producer = actionTrace.producer
+
       const [deserializedAction] = await this.deserializeActionTraces([serializedAction])
 
       const action: EosAction = {
@@ -68,7 +70,8 @@ export class StateHistoryPostgresBlock implements Block {
           ...deserializedAction,
           actionIndex: actionTrace.action_index,
           transactionId: actionTrace.transaction_id,
-          notifiedAccounts: [actionTrace.receipt_receiver]
+          notifiedAccounts: [actionTrace.receipt_receiver],
+          producer
         }
       }
       return action

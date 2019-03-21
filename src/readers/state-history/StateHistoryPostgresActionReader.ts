@@ -1,6 +1,6 @@
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import massive from 'massive'
-import { StateHistoryPostgresActionReaderOptions } from '../interfaces'
+import { StateHistoryPostgresActionReaderOptions } from '../../interfaces'
 import { StateHistoryPostgresBlock } from './StateHistoryPostgresBlock'
 
 export class StateHistoryPostgresActionReader extends AbstractActionReader {
@@ -34,9 +34,13 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
     const query = `
       SELECT at.transaction_id, at.block_index, at.account,
               at.name, at_authorization.actor, at_authorization.permission,
-              at.action_index, at.receipt_receiver, at.data
-      FROM ${this.dbSchema}.action_trace AS at, ${this.dbSchema}.action_trace_authorization AS at_authorization
-      WHERE at.block_index = $1 AND at.transaction_id = at_authorization.transaction_id
+              at.action_index, at.receipt_receiver, at.data, bi.producer
+      FROM ${this.dbSchema}.action_trace AS at,
+           ${this.dbSchema}.action_trace_authorization AS at_authorization,
+           ${this.dbSchema}.block_info as bi
+      WHERE at.block_index = $1 AND
+            at.transaction_id = at_authorization.transaction_id AND
+            bi.block_index = at.block_index
     `
 
     if (! this.massiveInstance) {

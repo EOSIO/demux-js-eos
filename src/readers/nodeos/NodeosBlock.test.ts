@@ -24,6 +24,7 @@ describe('NodeosBlock', () => {
           data: {
             memo: 'EOS is awesome!',
           },
+          producer: 'eoscafeblock',
           name: 'action',
           transactionId: 'b890beb84a6d1d77755f2e0cdad48e2ffcfd06ff3481917b4875cc5f3a343533',
         },
@@ -42,6 +43,7 @@ describe('NodeosBlock', () => {
           data: {
             memo: 'Go EOS!',
           },
+          producer: 'eoscafeblock',
           name: 'action2',
           transactionId: 'b890beb84a6d1d77755f2e0cdad48e2ffcfd06ff3481917b4875cc5f3a343533',
         },

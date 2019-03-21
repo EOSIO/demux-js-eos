@@ -16,6 +16,7 @@ describe('StateHistoryPostgresBlock', () => {
         action_index: 1,
         transaction_id: '12345',
         receipt_receiver: 'userbbbbbbbb',
+        producer: 'eosio',
         name: 'transfer',
         actor: 'useraaaaaaaa',
         permission: 'active',
@@ -41,6 +42,7 @@ describe('StateHistoryPostgresBlock', () => {
       payload: {
         account: 'token',
         name: 'transfer',
+        producer: 'eosio',
         authorization: [{
           actor: 'useraaaaaaaa',
           permission: 'active',
