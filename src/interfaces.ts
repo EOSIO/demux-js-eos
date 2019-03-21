@@ -25,6 +25,7 @@ export interface EosPayload {
   authorization: EosAuthorization[]
   data: any
   name: string
+  producer: string
   transactionId: string
   notifiedAccounts?: string[]
 }
