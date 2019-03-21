@@ -1,10 +1,10 @@
-import { TestActionHandler } from '../../testHelpers/TestActionHandler'
+import { TestMassiveEosActionHandler } from '../../testHelpers/TestMassiveEosActionHandler'
 
 describe('MassiveEosActionHandler implements matchActionType method', () => {
-  let actionHandler: TestActionHandler
+  let actionHandler: TestMassiveEosActionHandler
 
   beforeAll(() => {
-    actionHandler = new TestActionHandler([
+    actionHandler = new TestMassiveEosActionHandler([
       {
         versionName: 'v1',
         updaters: [],
