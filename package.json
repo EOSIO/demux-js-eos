@@ -6,9 +6,13 @@
   "types": "dist/index.d.ts",
   "repository": "https://github.com/EOSIO/demux-js-eos",
   "author": {
-    "name": "Julien Heller",
+    "name": "block.one",
     "url": "https://block.one/"
   },
+  "collaborators": [
+    "Julien Heller",
+    "Jeffrey Smith"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@blockone/tslint-config-blockone": "^2.0.0",
