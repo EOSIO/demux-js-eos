@@ -19,11 +19,11 @@ export interface EosAuthorization {
   permission: string
 }
 
-export interface EosPayload {
+export interface EosPayload<ActionStruct = any> {
   account: string
   actionIndex: number
   authorization: EosAuthorization[]
-  data: any
+  data: ActionStruct
   name: string
   producer: string
   transactionId: string
