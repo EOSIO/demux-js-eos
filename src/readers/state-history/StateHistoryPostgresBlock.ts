@@ -3,7 +3,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import fetch from 'node-fetch'
 import { TextDecoder, TextEncoder } from 'util'
-import { EosAction } from '../../interfaces'
+import { EosAction, TransactionActions } from '../../interfaces'
 import { StateHistoryPostgresAbiProvider } from './StateHistoryPostgresAbiProvider'
 
 // Wrapper to deal with differences between the definitions of fetch for the browser built-in
@@ -48,7 +48,7 @@ export class StateHistoryPostgresBlock implements Block {
     }
   }
 
-  public async parseActions(): Promise<EosAction[]> {
+  public async parseActions() {
     const actionPromises: Array<Promise<EosAction>> = this.actionTraceAuthorizations.map(async (actionTrace: any) => {
       const serializedAction = {
         account: actionTrace.account,
@@ -59,30 +59,64 @@ export class StateHistoryPostgresBlock implements Block {
         }],
         data: actionTrace.data,
       }
-
-      const producer = actionTrace.producer
-
-      const [deserializedAction] = await this.deserializeActionTraces([serializedAction])
-
+      const [deserializedAction] = await this.api.deserializeActions([serializedAction])
       const action: EosAction = {
         type: `${actionTrace.account}::${actionTrace.name}`,
         payload: {
-          ...deserializedAction,
-          actionIndex: actionTrace.action_index,
+          account: deserializedAction.account,
+          name: deserializedAction.name,
+          authorization: deserializedAction.authorization,
+          data: deserializedAction.data,
+          actionOrdinal: actionTrace.action_ordinal,
           transactionId: actionTrace.transaction_id,
           notifiedAccounts: [actionTrace.receipt_receiver],
-          producer
+          producer: actionTrace.producer,
+          isContextFree: actionTrace.context_free,
+          isInline: actionTrace.creatoraction_ordinal > 0,
+          contextFreeData: actionTrace.partial_context_free_data,
         }
       }
       return action
     })
 
     this.actions = await Promise.all(actionPromises)
-    return this.actions
+    this.linkTransactions()
   }
 
-  private async deserializeActionTraces(actionTraces: any): Promise<any> {
-    const actions = await this.api.deserializeActions(actionTraces)
-    return actions
+  private linkTransactions(): any {
+    const actionsByTxId: { [key: string]: EosAction[] } = {}
+    for (const action of this.actions) {
+      if (!actionsByTxId[action.payload.transactionId]) {
+        actionsByTxId[action.payload.transactionId] = []
+      }
+      actionsByTxId[action.payload.transactionId].push(action)
+    }
+    this.attachTransactionActions(actionsByTxId)
+  }
+
+  private attachTransactionActions(actionsByTxId: { [key: string]: EosAction[] }) {
+    for (const transactionId of Object.keys(actionsByTxId)) {
+      actionsByTxId[transactionId].sort((a: EosAction, b: EosAction) => {
+        // No non-null assertion disabled because database will always have an action_ordinal value
+        return a.payload.actionOrdinal! - b.payload.actionOrdinal! // tslint:disable-line
+      })
+      const transactionActions: TransactionActions = {
+        contextFreeActions: [],
+        actions: [],
+        inlineActions: [],
+      }
+      const contextFreeData = actionsByTxId[transactionId][0].payload.contextFreeData
+      for (const action of actionsByTxId[transactionId]) {
+        action.payload.transactionActions = transactionActions
+        action.payload.contextFreeData = contextFreeData
+        if (action.payload.isInline) {
+          transactionActions.inlineActions.push(action)
+        } else if (action.payload.isContextFree) {
+          transactionActions.contextFreeActions.push(action)
+        } else {
+          transactionActions.actions.push(action)
+        }
+      }
+    }
   }
 }

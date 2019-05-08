@@ -32,15 +32,31 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
 
     // Uses ${<var-name>} for JS substitutions and $<var-name> for massivejs substitutions.
     const query = `
-      SELECT at.transaction_id, at.block_index, at.account,
-              at.name, at_authorization.actor, at_authorization.permission,
-              at.action_index, at.receipt_receiver, at.data, bi.producer
+      SELECT at.account,
+             at.name,
+             at.data,
+             at.transaction_id,
+             at.action_ordinal,
+             at.creator_action_ordinal,
+             at.receipt_global_sequence,
+             at.context_free,
+             at.receipt_receiver,
+             at.block_num,
+             at_authorization.actor,
+             at_authorization.permission,
+             tt.transaction_ordinal,
+             tt.partial_context_free_data,
+             bi.producer
       FROM ${this.dbSchema}.action_trace AS at,
            ${this.dbSchema}.action_trace_authorization AS at_authorization,
-           ${this.dbSchema}.block_info as bi
-      WHERE at.block_index = $1 AND
+           ${this.dbSchema}.block_info as bi,
+           ${this.dbSchema}.transaction_trace as tt
+      WHERE at.receipt_present = true AND
+            tt.id = at.transaction_id AND
+            at.block_num = $1 AND
             at.transaction_id = at_authorization.transaction_id AND
-            bi.block_index = at.block_index
+            bi.block_num = at.block_num
+      ORDER BY at.receipt_global_sequence
     `
 
     if (! this.massiveInstance) {

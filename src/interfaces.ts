@@ -21,15 +21,26 @@ export interface EosAuthorization {
 
 export interface EosPayload<ActionStruct = any> {
   account: string
-  actionIndex: number
   authorization: EosAuthorization[]
   data: ActionStruct
   name: string
-  producer: string
   transactionId: string
+  actionIndex?: number
+  actionOrdinal?: number
+  producer?: string
   notifiedAccounts?: string[]
+  isContextFree?: boolean
+  isInline?: boolean
+  contextFreeData?: Uint8Array[]
+  transactionActions?: TransactionActions
 }
 
 export interface EosAction extends Action {
   payload: EosPayload
+}
+
+export interface TransactionActions {
+  contextFreeActions: EosAction[]
+  actions: EosAction[]
+  inlineActions: EosAction[]
 }
