@@ -12,6 +12,7 @@ export interface MongoActionReaderOptions extends ActionReaderOptions {
 export interface StateHistoryPostgresActionReaderOptions extends ActionReaderOptions {
   massiveConfig: any
   dbSchema?: string
+  enablePgMonitor?: boolean
 }
 
 export interface EosAuthorization {

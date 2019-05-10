@@ -1,5 +1,6 @@
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import massive from 'massive'
+import pgMonitor from 'pg-monitor'
 import { StateHistoryPostgresActionReaderOptions } from '../../interfaces'
 import { StateHistoryPostgresBlock } from './StateHistoryPostgresBlock'
 
@@ -8,11 +9,13 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
   private massiveInstance: massive.Database | null = null
   private massiveConfig: any
   private dbSchema: string
+  private enablePgMonitor: boolean
 
   constructor(options: StateHistoryPostgresActionReaderOptions) {
     super(options)
     this.massiveConfig = options.massiveConfig
     this.dbSchema = options.dbSchema ? options.dbSchema : 'chain'
+    this.enablePgMonitor = options.enablePgMonitor ? true : false
   }
 
   public async getHeadBlockNumber(): Promise<number> {
@@ -82,6 +85,9 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
 
     try {
       this.massiveInstance = await massive(this.massiveConfig)
+      if (this.enablePgMonitor) {
+        await pgMonitor.attach(this.massiveInstance.driverConfig)
+      }
       this.db = this.massiveInstance[this.dbSchema]
     } catch (err) {
       throw new NotInitializedError('', err)
