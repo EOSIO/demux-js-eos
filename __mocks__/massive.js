@@ -15,7 +15,7 @@ const massive = () => {
       },
       block_info: {
         findOne: () => ({
-          block_index: 4,
+          block_num: 4,
           block_id: 'qwerty1234',
           previous: 'qwerty1233',
           timestamp: new Date().toString(),
@@ -24,13 +24,11 @@ const massive = () => {
     },
     query: () => ([
       {
-        account: 'token',
-        name: 'transfer',
-        authorization: [{
-          actor: 'useraaaaaaaa',
-          permission: 'active',
-        }],
-        data: [100, 100, 100, 100, 100, 100, 100],
+        act_account: 'token',
+        act_name: 'transfer',
+        act_data: [100, 100, 100, 100, 100, 100, 100],
+        actor: 'useraaaaaaaa',
+        permission: 'active',
       }
     ]),
   }

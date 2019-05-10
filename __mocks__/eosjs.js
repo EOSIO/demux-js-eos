@@ -16,6 +16,7 @@ class Api {
     }
     return returnVals
   }
+  get abiProvider() { return {} }
 }
 
 class JsonRpc {}

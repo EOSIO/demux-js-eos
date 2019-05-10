@@ -14,7 +14,8 @@ describe('StateHistoryPostgresAbiProvider', () => {
         },
       }
     }
-    stateHistoryPostgresAbiProvider = new StateHistoryPostgresAbiProvider(massiveMock)
+    stateHistoryPostgresAbiProvider = new StateHistoryPostgresAbiProvider()
+    stateHistoryPostgresAbiProvider.massiveInstance = massiveMock
   })
   it('retrieves abis', async () => {
     const abi = await stateHistoryPostgresAbiProvider.getRawAbi('test')
