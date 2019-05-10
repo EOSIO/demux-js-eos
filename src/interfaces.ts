@@ -32,7 +32,7 @@ export interface EosPayload<ActionStruct = any> {
   notifiedAccounts?: string[]
   isContextFree?: boolean
   isInline?: boolean
-  contextFreeData?: Uint8Array[]
+  contextFreeData?: Buffer[]
   transactionActions?: TransactionActions
 }
 
