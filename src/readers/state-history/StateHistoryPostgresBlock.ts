@@ -99,17 +99,17 @@ export class StateHistoryPostgresBlock implements Block {
     }
   }
 
-  private async getDeserializedAction(api: Api, actionTrace: any) {
+  private async getDeserializedAction(eosApi: Api, actionTrace: any) {
     const serializedAction = this.createSerializedAction(actionTrace)
     let deserializedAction: any
     try {
-      [deserializedAction] = await api.deserializeActions([serializedAction])
+      [deserializedAction] = await eosApi.deserializeActions([serializedAction])
     } catch (err) {
       if (err.message.startsWith('Unknown action')) {
-        api.cachedAbis.delete(actionTrace.act_account)
-        api.contracts.delete(actionTrace.act_account)
+        eosApi.cachedAbis.delete(actionTrace.act_account)
+        eosApi.contracts.delete(actionTrace.act_account)
         try {
-          [deserializedAction] = await api.deserializeActions([serializedAction])
+          [deserializedAction] = await eosApi.deserializeActions([serializedAction])
         } catch (err) {
           if (err.message.startsWith('Unknown action')) {
             console.warn(`Action ${actionTrace.act_account}::${actionTrace.act_name} does not have an ABI; skipped`)
