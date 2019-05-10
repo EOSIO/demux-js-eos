@@ -30,14 +30,14 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
 
   public async getBlock(blockNumber: number): Promise<StateHistoryPostgresBlock> {
     const pgBlockInfo = await this.db.block_info.findOne({
-      block_index: blockNumber,
+      block_num: blockNumber,
     })
 
     // Uses ${<var-name>} for JS substitutions and $<var-name> for massivejs substitutions.
     const query = `
-      SELECT at.account,
-             at.name,
-             at.data,
+      SELECT at.act_account,
+             at.act_name,
+             at.act_data,
              at.transaction_id,
              at.action_ordinal,
              at.creator_action_ordinal,
