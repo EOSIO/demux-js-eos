@@ -24,6 +24,7 @@ describe('StateHistoryPostgresBlock', () => {
         data: [100, 100, 100, 100, 100, 100, 100],
         partial_context_free_data: [],
       }],
+      [],
       {},
     )
     await stateHistoryPostgresBlock.parseActions()
@@ -91,6 +92,7 @@ describe('StateHistoryPostgresBlock', () => {
         permission: 'active',
         data: [100, 100, 100, 100, 100, 100, 100],
       }],
+      [],
       {},
     )
     await stateHistoryPostgresBlock.parseActions()
