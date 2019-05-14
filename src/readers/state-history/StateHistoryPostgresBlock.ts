@@ -37,10 +37,12 @@ const getApi = (massiveInstance: any, dbSchema: string, blockNumber: number) => 
 export class StateHistoryPostgresBlock implements Block {
   public actions: EosAction[] = []
   public blockInfo: BlockInfo
+  private contextFreeDataById: any = {}
 
   constructor(
     rawBlockInfo: any,
     private actionTraceAuthorizations: any,
+    private rawContextFreeData: any,
     private massiveInstance: any,
     private dbSchema: string = 'chain',
   ) {
@@ -50,6 +52,7 @@ export class StateHistoryPostgresBlock implements Block {
       previousBlockHash: rawBlockInfo.previous,
       timestamp: rawBlockInfo.timestamp,
     }
+    this.getContextFreeDataById()
   }
 
   private defaultIgnoreActions = ['eosio::onblock']
@@ -62,29 +65,57 @@ export class StateHistoryPostgresBlock implements Block {
       }
       return true
     })
-    const actionPromises: Array<Promise<EosAction>> = filteredActionTraces.map(async (actionTrace: any) => {
-      const deserializedAction = await this.getDeserializedAction(eosApi, actionTrace)
-      const action: EosAction = {
-        type: `${actionTrace.act_account}::${actionTrace.act_name}`,
-        payload: {
-          account: deserializedAction.account,
-          name: deserializedAction.name,
-          authorization: deserializedAction.authorization,
-          data: deserializedAction.data,
-          actionOrdinal: actionTrace.action_ordinal,
-          transactionId: actionTrace.transaction_id,
-          notifiedAccounts: [actionTrace.receipt_receiver],
-          producer: actionTrace.producer,
-          isContextFree: actionTrace.context_free,
-          isInline: actionTrace.creator_action_ordinal > 0,
-          contextFreeData: actionTrace.partial_context_free_data,
-        }
-      }
-      return action
-    })
 
-    this.actions = await Promise.all(actionPromises)
+    // Make sure to fetch ABI for the same contract only once
+    const indexedFirstActions = await this.getIndexedFirstActions(eosApi, filteredActionTraces)
+
+    const actionPromises: Array<Promise<EosAction | null>> = filteredActionTraces.map(
+      async (actionTrace: any, index: number) => {
+        if (indexedFirstActions[index]) {
+          return indexedFirstActions[index]
+        }
+        const action = await this.getEosAction(eosApi, actionTrace)
+        if (action === null) {
+          return null
+        }
+        return action
+      }
+    )
+
+    this.actions = (await Promise.all(actionPromises)).filter(
+      (action): action is EosAction => (action !== null)
+    )
     this.linkTransactions()
+  }
+
+  private async getIndexedFirstActions(eosApi: Api, actionTraces: any) {
+    const toProcessFirst: { [key: string]: any } = actionTraces.reduce(
+      (accumulator: any, actionTrace: any, index: number) => {
+        if (!Object.keys(accumulator).includes(actionTrace.act_account)) {
+          accumulator[actionTrace.act_account] = {
+            actionTrace,
+            index,
+          }
+        }
+        return accumulator
+      },
+      {}
+    )
+    const firstActionsPromises = Object.values(toProcessFirst).map(async (indexedActionTrace: any) => {
+      const action = await this.getEosAction(eosApi, indexedActionTrace.actionTrace)
+      return {
+        action,
+        index: indexedActionTrace.index,
+      }
+    })
+    const firstActions = await Promise.all(firstActionsPromises)
+    return firstActions.reduce(
+      (accumulator: any, firstAction: any) => {
+        accumulator[firstAction.index] = firstAction.action
+        return accumulator
+      },
+      {}
+    )
   }
 
   private createSerializedAction(actionTrace: any) {
@@ -99,7 +130,7 @@ export class StateHistoryPostgresBlock implements Block {
     }
   }
 
-  private async getDeserializedAction(eosApi: Api, actionTrace: any) {
+  private async getEosAction(eosApi: Api, actionTrace: any): Promise<any | null> {
     const serializedAction = this.createSerializedAction(actionTrace)
     let deserializedAction: any
     try {
@@ -113,6 +144,7 @@ export class StateHistoryPostgresBlock implements Block {
         } catch (err) {
           if (err.message.startsWith('Unknown action')) {
             console.warn(`Action ${actionTrace.act_account}::${actionTrace.act_name} does not have an ABI; skipped`)
+            return null
           } else {
             throw err
           }
@@ -121,7 +153,25 @@ export class StateHistoryPostgresBlock implements Block {
         throw err
       }
     }
-    return deserializedAction
+
+    const action: EosAction = {
+      type: `${actionTrace.act_account}::${actionTrace.act_name}`,
+      payload: {
+        account: deserializedAction.account,
+        name: deserializedAction.name,
+        authorization: deserializedAction.authorization,
+        data: deserializedAction.data,
+        actionOrdinal: actionTrace.action_ordinal,
+        transactionId: actionTrace.transaction_id,
+        notifiedAccounts: [actionTrace.receipt_receiver],
+        producer: actionTrace.producer,
+        isContextFree: actionTrace.context_free,
+        isInline: actionTrace.creator_action_ordinal > 0,
+        contextFreeData: this.contextFreeDataById[actionTrace.transaction_id] || []
+      }
+    }
+
+    return action
   }
 
   private linkTransactions(): any {
@@ -159,5 +209,12 @@ export class StateHistoryPostgresBlock implements Block {
         }
       }
     }
+  }
+
+  private getContextFreeDataById() {
+    this.contextFreeDataById = this.rawContextFreeData.reduce((accumulator: any, cfd: any) => {
+      accumulator[cfd.id] = cfd.partial_context_free_data
+      return accumulator
+    }, {})
   }
 }
