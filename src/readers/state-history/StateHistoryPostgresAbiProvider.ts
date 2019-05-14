@@ -10,7 +10,7 @@ export class StateHistoryPostgresAbiProvider implements ApiInterfaces.AbiProvide
     const accountRow = await db.account.findOne(
       {
         'name': accountName,
-        'block_num <': this.blockNumber,
+        'block_num <=': this.blockNumber,
       },
       { order: [{
         field: 'block_num',
