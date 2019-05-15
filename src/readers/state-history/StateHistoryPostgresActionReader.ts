@@ -15,7 +15,7 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
     super(options)
     this.massiveConfig = options.massiveConfig
     this.dbSchema = options.dbSchema ? options.dbSchema : 'chain'
-    this.enablePgMonitor = options.enablePgMonitor ? true : false
+    this.enablePgMonitor = !!options.enablePgMonitor
   }
 
   public async getHeadBlockNumber(): Promise<number> {
@@ -34,7 +34,7 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
     })
 
     // Uses ${<var-name>} for JS substitutions and $<var-name> for massivejs substitutions.
-    const query = `
+    const actionTracesQuery = `
       SELECT at.act_account,
              at.act_name,
              at.act_data,
@@ -47,30 +47,36 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
              at.block_num,
              at_authorization.actor,
              at_authorization.permission,
-             tt.transaction_ordinal,
-             tt.partial_context_free_data,
              bi.producer
       FROM ${this.dbSchema}.action_trace AS at,
            ${this.dbSchema}.action_trace_authorization AS at_authorization,
-           ${this.dbSchema}.block_info as bi,
-           ${this.dbSchema}.transaction_trace as tt
+           ${this.dbSchema}.block_info as bi
       WHERE at.receipt_present = true AND
-            tt.id = at.transaction_id AND
             at.block_num = $1 AND
             at.transaction_id = at_authorization.transaction_id AND
             bi.block_num = at.block_num
       ORDER BY at.receipt_global_sequence
     `
+    const contextFreeDataQuery = `
+      SELECT tt.partial_context_free_data, tt.id
+      FROM ${this.dbSchema}.transaction_trace as tt
+      WHERE tt.block_num = $1
+    `
 
-    if (! this.massiveInstance) {
+    if (!this.massiveInstance) {
       throw new NotInitializedError('Massive was not initialized.')
     }
 
-    const pgActionTraceAuthorizations = await this.massiveInstance.query(query, [blockNumber])
+    const pgActionTraceAuthorizationsPromise = this.massiveInstance.query(actionTracesQuery, [blockNumber])
+    const pgContextFreeDataPromise = this.massiveInstance.query(contextFreeDataQuery, [blockNumber])
+    const [pgActionTraceAuthorizations, pgContextFreeData] = await Promise.all(
+      [pgActionTraceAuthorizationsPromise, pgContextFreeDataPromise]
+    )
 
     const block = new StateHistoryPostgresBlock(
       pgBlockInfo,
       pgActionTraceAuthorizations,
+      pgContextFreeData,
       this.massiveInstance,
       this.dbSchema,
     )
