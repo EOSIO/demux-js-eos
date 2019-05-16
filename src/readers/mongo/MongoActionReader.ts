@@ -32,7 +32,10 @@ export class MongoActionReader extends AbstractActionReader {
 
     try {
       const blockNum = await retry(async () => {
-        const [blockInfo] = await this.mongodb!.collection('block_states')
+        if (!this.mongodb) {
+          throw new NotInitializedError('Mongo connection not initialized.')
+        }
+        const [blockInfo] = await this.mongodb.collection('block_states')
           .find({})
           .limit(1)
           .sort({ $natural: -1 })
@@ -52,7 +55,10 @@ export class MongoActionReader extends AbstractActionReader {
 
     try {
       const irreversibleBlockNum = await retry(async () => {
-        const [blockInfo] = await this.mongodb!.collection('block_states')
+        if (!this.mongodb) {
+          throw new NotInitializedError('Mongo connection not initialized.')
+        }
+        const [blockInfo] = await this.mongodb.collection('block_states')
           .find({})
           .limit(1)
           .sort({ $natural: -1 })
@@ -72,13 +78,16 @@ export class MongoActionReader extends AbstractActionReader {
 
     try {
       const mongoBlock = await retry(async () => {
-        const blockStates = await this.mongodb!.collection('block_states')
+        if (!this.mongodb) {
+          throw new NotInitializedError('Mongo connection not initialized.')
+        }
+        const blockStates = await this.mongodb.collection('block_states')
           .find({ block_num: blockNumber })
           .toArray()
 
         this.validateBlockStates(blockStates, blockNumber)
         const [blockState] = blockStates
-        const rawActions = await this.mongodb!.collection('action_traces')
+        const rawActions = await this.mongodb.collection('action_traces')
           .find({
             block_num: blockNumber,
             producer_block_id: blockState.block_id,
@@ -96,10 +105,6 @@ export class MongoActionReader extends AbstractActionReader {
   }
 
   protected async setup(): Promise<void> {
-    if (this.initialized) {
-      return
-    }
-
     const mongoInstance = await MongoClient.connect(this.mongoEndpoint, { useNewUrlParser: true })
     this.mongodb = await mongoInstance.db(this.dbName)
 

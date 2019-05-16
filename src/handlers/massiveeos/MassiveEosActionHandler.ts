@@ -1,10 +1,11 @@
 import { HandlerVersion } from 'demux'
+import { massive } from 'demux-postgres'
 import { MassiveActionHandler, MigrationSequence } from 'demux-postgres'
 
 export class MassiveEosActionHandler extends MassiveActionHandler {
   constructor(
     protected handlerVersions: HandlerVersion[],
-    protected massiveInstance: any,
+    protected massiveInstance: massive.Database,
     protected dbSchema: string = 'public',
     protected migrationSequences: MigrationSequence[] = [],
   ) {
@@ -12,8 +13,7 @@ export class MassiveEosActionHandler extends MassiveActionHandler {
   }
 
   /**
-   * By default, this method tests for direct equivalence between the incoming candidate type and the type that is
-   * subscribed. Override this method to extend this functionality (e.g. wildcards).
+   * Matches wildcards in subscriptions for both the contract name and action type
    *
    * @param candidateType   The incoming action's type
    * @param subscribedType  The type the Updater of Effect is subscribed to
