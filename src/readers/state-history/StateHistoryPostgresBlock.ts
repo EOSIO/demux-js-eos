@@ -70,16 +70,12 @@ export class StateHistoryPostgresBlock implements Block {
     // Make sure to fetch ABI for the same contract only once
     const indexedFirstActions = await this.getIndexedFirstActions(eosApi, filteredActionTraces)
 
-    const actionPromises: Array<Promise<EosAction | null>> = filteredActionTraces.map(
+    const actionPromises: Array<Promise<EosAction>> = filteredActionTraces.map(
       async (actionTrace: any, index: number) => {
         if (indexedFirstActions[index]) {
           return indexedFirstActions[index]
         }
-        const action = await this.getEosAction(eosApi, actionTrace)
-        if (action === null) {
-          return null
-        }
-        return action
+        return this.getEosAction(eosApi, actionTrace)
       }
     )
 
@@ -133,7 +129,7 @@ export class StateHistoryPostgresBlock implements Block {
     }
   }
 
-  private async getEosAction(eosApi: Api, actionTrace: any): Promise<any | null> {
+  private async getEosAction(eosApi: Api, actionTrace: any): Promise<any> {
     const serializedAction = this.createSerializedAction(actionTrace)
     let deserializedAction: any
     try {
