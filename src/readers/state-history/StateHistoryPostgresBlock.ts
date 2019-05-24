@@ -53,6 +53,7 @@ export class StateHistoryPostgresBlock implements Block {
       timestamp: rawBlockInfo.timestamp,
     }
     this.getContextFreeDataById()
+    this.warnIfNotDistinct()
   }
 
   private defaultIgnoreActions = ['eosio::onblock']
@@ -122,10 +123,12 @@ export class StateHistoryPostgresBlock implements Block {
     return {
       account: actionTrace.act_account,
       name: actionTrace.act_name,
-      authorization: [{
-        actor: actionTrace.actor,
-        permission: actionTrace.permission,
-      }],
+      authorization: actionTrace.authorizations.map((authorization: string[]) => {
+        return {
+          actor: authorization[0],
+          permission: authorization[1],
+        }
+      }),
       data: actionTrace.act_data,
     }
   }
