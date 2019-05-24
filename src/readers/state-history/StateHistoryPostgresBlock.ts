@@ -85,6 +85,15 @@ export class StateHistoryPostgresBlock implements Block {
     this.linkTransactions()
   }
 
+  private warnIfNotDistinct() {
+    const globalSequences = [
+      ...new Set(this.actionTraceAuthorizations.map((action: any) => action.receipt_global_sequence))
+    ]
+    if (!(globalSequences.length === this.actionTraceAuthorizations.length)) {
+      console.warn(`Global action traces are not distinct. Block number: ${this.blockInfo.blockNumber}`)
+    }
+  }
+
   private async getIndexedFirstActions(eosApi: Api, actionTraces: any) {
     const toProcessFirst: { [key: string]: any } = actionTraces.reduce(
       (accumulator: any, actionTrace: any, index: number) => {
@@ -142,8 +151,9 @@ export class StateHistoryPostgresBlock implements Block {
           [deserializedAction] = await eosApi.deserializeActions([serializedAction])
         } catch (err) {
           if (err.message.startsWith('Unknown action')) {
-            console.warn(`Action ${actionTrace.act_account}::${actionTrace.act_name} does not have an ABI; skipped`)
-            return null
+            console.warn(`Action ${actionTrace.act_account}::${actionTrace.act_name} does not have an ABI; ` +
+              `Using serialized action instead.`)
+            deserializedAction = serializedAction
           } else {
             throw err
           }
