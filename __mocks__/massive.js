@@ -27,8 +27,7 @@ const massive = () => {
         act_account: 'token',
         act_name: 'transfer',
         act_data: [100, 100, 100, 100, 100, 100, 100],
-        actor: 'useraaaaaaaa',
-        permission: 'active',
+        authorizations: [['useraaaaaaaa', 'active']],
       }
     ]),
   }
