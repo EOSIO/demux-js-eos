@@ -172,7 +172,7 @@ export class StateHistoryPostgresBlock implements Block {
         data: deserializedAction.data,
         actionOrdinal: actionTrace.action_ordinal,
         transactionId: actionTrace.transaction_id,
-        notifiedAccounts: [actionTrace.receipt_receiver],
+        receiver: actionTrace.receipt_receiver,
         producer: actionTrace.producer,
         isContextFree: actionTrace.context_free,
         isInline: actionTrace.creator_action_ordinal > 0,
