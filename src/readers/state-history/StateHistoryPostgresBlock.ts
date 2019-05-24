@@ -53,6 +53,7 @@ export class StateHistoryPostgresBlock implements Block {
       timestamp: rawBlockInfo.timestamp,
     }
     this.getContextFreeDataById()
+    this.warnIfNotDistinct()
   }
 
   private defaultIgnoreActions = ['eosio::onblock']
@@ -69,16 +70,12 @@ export class StateHistoryPostgresBlock implements Block {
     // Make sure to fetch ABI for the same contract only once
     const indexedFirstActions = await this.getIndexedFirstActions(eosApi, filteredActionTraces)
 
-    const actionPromises: Array<Promise<EosAction | null>> = filteredActionTraces.map(
+    const actionPromises: Array<Promise<EosAction>> = filteredActionTraces.map(
       async (actionTrace: any, index: number) => {
         if (indexedFirstActions[index]) {
           return indexedFirstActions[index]
         }
-        const action = await this.getEosAction(eosApi, actionTrace)
-        if (action === null) {
-          return null
-        }
-        return action
+        return this.getEosAction(eosApi, actionTrace)
       }
     )
 
@@ -86,6 +83,15 @@ export class StateHistoryPostgresBlock implements Block {
       (action): action is EosAction => (action !== null)
     )
     this.linkTransactions()
+  }
+
+  private warnIfNotDistinct() {
+    const globalSequences = [
+      ...new Set(this.actionTraceAuthorizations.map((action: any) => action.receipt_global_sequence))
+    ]
+    if (!(globalSequences.length === this.actionTraceAuthorizations.length)) {
+      console.warn(`Global action traces are not distinct. Block number: ${this.blockInfo.blockNumber}`)
+    }
   }
 
   private async getIndexedFirstActions(eosApi: Api, actionTraces: any) {
@@ -122,15 +128,17 @@ export class StateHistoryPostgresBlock implements Block {
     return {
       account: actionTrace.act_account,
       name: actionTrace.act_name,
-      authorization: [{
-        actor: actionTrace.actor,
-        permission: actionTrace.permission,
-      }],
+      authorization: actionTrace.authorizations.map((authorization: string[]) => {
+        return {
+          actor: authorization[0],
+          permission: authorization[1],
+        }
+      }),
       data: actionTrace.act_data,
     }
   }
 
-  private async getEosAction(eosApi: Api, actionTrace: any): Promise<any | null> {
+  private async getEosAction(eosApi: Api, actionTrace: any): Promise<any> {
     const serializedAction = this.createSerializedAction(actionTrace)
     let deserializedAction: any
     try {
@@ -143,8 +151,9 @@ export class StateHistoryPostgresBlock implements Block {
           [deserializedAction] = await eosApi.deserializeActions([serializedAction])
         } catch (err) {
           if (err.message.startsWith('Unknown action')) {
-            console.warn(`Action ${actionTrace.act_account}::${actionTrace.act_name} does not have an ABI; skipped`)
-            return null
+            console.warn(`Action ${actionTrace.act_account}::${actionTrace.act_name} does not have an ABI; ` +
+              `Using serialized action instead.`)
+            deserializedAction = serializedAction
           } else {
             throw err
           }
@@ -163,7 +172,7 @@ export class StateHistoryPostgresBlock implements Block {
         data: deserializedAction.data,
         actionOrdinal: actionTrace.action_ordinal,
         transactionId: actionTrace.transaction_id,
-        notifiedAccounts: [actionTrace.receipt_receiver],
+        receiver: actionTrace.receipt_receiver,
         producer: actionTrace.producer,
         isContextFree: actionTrace.context_free,
         isInline: actionTrace.creator_action_ordinal > 0,

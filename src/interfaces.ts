@@ -30,14 +30,15 @@ export interface EosPayload<ActionStruct = any> {
   actionOrdinal?: number
   producer?: string
   notifiedAccounts?: string[]
+  receiver?: string
   isContextFree?: boolean
   isInline?: boolean
   contextFreeData?: Buffer[]
   transactionActions?: TransactionActions
 }
 
-export interface EosAction extends Action {
-  payload: EosPayload
+export interface EosAction<ActionStruct = any> extends Action {
+  payload: EosPayload<ActionStruct>
 }
 
 export interface TransactionActions {
