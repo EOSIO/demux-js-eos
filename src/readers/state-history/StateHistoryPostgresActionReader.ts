@@ -35,7 +35,7 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
 
     // Uses ${<var-name>} for JS substitutions and $<number> for massivejs substitutions.
     const actionTracesQuery = `
-      SELECT DISTINCT at.act_account,
+      SELECT at.act_account,
              at.act_name,
              at.act_data,
              at.transaction_id,
