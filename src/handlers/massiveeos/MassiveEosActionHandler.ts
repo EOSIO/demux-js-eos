@@ -1,6 +1,7 @@
 import { HandlerVersion } from 'demux'
 import { massive } from 'demux-postgres'
 import { MassiveActionHandler, MigrationSequence } from 'demux-postgres'
+import { EosPayload } from '../../interfaces'
 
 export class MassiveEosActionHandler extends MassiveActionHandler {
   constructor(
@@ -10,6 +11,7 @@ export class MassiveEosActionHandler extends MassiveActionHandler {
     protected migrationSequences: MigrationSequence[] = [],
   ) {
     super(handlerVersions, massiveInstance, dbSchema, migrationSequences)
+    this.validateHandlerVersions(handlerVersions)
   }
 
   /**
@@ -36,5 +38,35 @@ export class MassiveEosActionHandler extends MassiveActionHandler {
     }
     return contractsMatch && actionsMatch && notifiedMatch
   }
+
+  /**
+   * Validates that all passed Updaters and Effects use valid, expected syntax for their action types.
+   *
+   * @param handlerVersions  The handlerVersions passed to the constructor
+   */
+  protected validateHandlerVersions(handlerVersions: HandlerVersion[]) {
+    const badActionTypes = new Set()
+    for (const handlerVersion of handlerVersions) {
+      const updatersAndEffects = [ ...handlerVersion.updaters, ...handlerVersion.effects ]
+      for (const subscription of updatersAndEffects) {
+        if (!this.validateActionType(subscription.actionType)) {
+          badActionTypes.add(subscription.actionType)
+        }
+      }
+    }
+    if (badActionTypes.size) {
+      const badActionTypesString = Array.from(badActionTypes).join(', ')
+      throw Error(`The following action types are not valid for EOS subscriptions: ${badActionTypesString}`)
+    }
+  }
+
+  /**
+   * Validates that a given action type uses expected syntax
+   *
+   * @param actionType
+   */
+  protected validateActionType(actionType: string) {
+    const validationRegex = /^([a-z12345]{1,12}|\*)::([a-z12345]{1,12}|\*)(>([a-z12345]{1,12}|\*))?$/g
+    return !!actionType.match(validationRegex)
   }
 }
