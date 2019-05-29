@@ -176,6 +176,7 @@ export class StateHistoryPostgresBlock implements Block {
         producer: actionTrace.producer,
         isContextFree: actionTrace.context_free,
         isInline: actionTrace.creator_action_ordinal > 0,
+        isNotification: actionTrace.act_account !== actionTrace.receipt_receiver,
         contextFreeData: this.contextFreeDataById[actionTrace.transaction_id] || []
       }
     }

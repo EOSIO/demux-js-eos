@@ -33,6 +33,7 @@ export interface EosPayload<ActionStruct = any> {
   receiver?: string
   isContextFree?: boolean
   isInline?: boolean
+  isNotification?: boolean
   contextFreeData?: Buffer[]
   transactionActions?: TransactionActions
 }
