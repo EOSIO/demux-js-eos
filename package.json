@@ -2,8 +2,8 @@
   "name": "demux-eos",
   "version": "5.0.4",
   "description": "Demux-js Action Reader implementations for EOSIO blockchains",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "repository": "https://github.com/EOSIO/demux-js-eos",
   "author": {
     "name": "block.one",
@@ -50,9 +50,10 @@
     "*/merge": "1.2.1"
   },
   "scripts": {
-    "build": "rm -rf dist/* && tsc",
+    "build": "yarn rm-build && tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest",
+    "rm-build": "node ./scripts/rm-build.js",
     "build-docs": "./scripts/build-docs.sh",
     "current-version": "echo $npm_package_version",
     "prepublishOnly": "yarn build"
