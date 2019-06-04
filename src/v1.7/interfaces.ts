@@ -9,12 +9,6 @@ export interface MongoActionReaderOptions extends ActionReaderOptions {
   dbName?: string
 }
 
-export interface StateHistoryPostgresActionReaderOptions extends ActionReaderOptions {
-  massiveConfig: any
-  dbSchema?: string
-  enablePgMonitor?: boolean
-}
-
 export interface EosAuthorization {
   actor: string
   permission: string

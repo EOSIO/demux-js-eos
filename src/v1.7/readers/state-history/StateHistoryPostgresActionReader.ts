@@ -1,7 +1,7 @@
 import { AbstractActionReader, NotInitializedError } from 'demux'
 import massive from 'massive'
 import pgMonitor from 'pg-monitor'
-import { StateHistoryPostgresActionReaderOptions } from '../../interfaces'
+import { StateHistoryPostgresActionReaderOptions } from './interfaces'
 import { StateHistoryPostgresBlock } from './StateHistoryPostgresBlock'
 
 export class StateHistoryPostgresActionReader extends AbstractActionReader {
