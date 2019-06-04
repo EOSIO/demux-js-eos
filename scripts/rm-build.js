@@ -25,6 +25,7 @@ const rmdirs = async (dir) => {
     if (buildItem.startsWith('index.')) {
       fs.unlinkSync(`${process.cwd()}/${buildItem}`)
     } else if (buildItem.match(/^v([0-9]+)+(\.[0-9]+)+(-[a-zA-Z0-9-_]+)?/g)) {
+      // Matches 'v' followed by digits separated by dots followed by an optional '-tag'
       await rmdirs(`${process.cwd()}/${buildItem}`)
     }
   }
