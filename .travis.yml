@@ -2,7 +2,6 @@ sudo: false
 language: node_js
 stages:
 - test
-- publish-edge
 - name: publish-edge
   if: "(NOT type IN (pull_request)) AND (branch = develop)"
 - name: publish-latest
