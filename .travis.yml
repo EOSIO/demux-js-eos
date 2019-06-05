@@ -27,8 +27,9 @@ jobs:
       provider: script
       skip_cleanup: true
       script: "./scripts/publish-edge.sh"
-#      on:
-#        branch: develop
+      on:
+        all_branches: true
+#          branch: develop
   - stage: publish-latest
     name: Publish @latest to NPM
     script:
