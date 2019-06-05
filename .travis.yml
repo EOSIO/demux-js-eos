@@ -1,10 +1,5 @@
 sudo: false
 language: node_js
-node_js:
-- 10.0.0
-before_install:
-- npm i -g npm@6.4.1
-- npm install -g typescript
 stages:
 - test
 - name: publish-edge
@@ -16,12 +11,12 @@ jobs:
   - stage: test
     name: Lint and Test
     script:
-    - npm run lint
-    - npm run test
+    - yarn lint
+    - yarn test
   - stage: publish-edge
     name: Publish @edge to NPM
     script:
-    - npm run build
+    - yarn build
     deploy:
       provider: script
       skip_cleanup: true
@@ -31,7 +26,7 @@ jobs:
   - stage: publish-latest
     name: Publish @latest to NPM
     script:
-    - npm run build
+    - yarn build
     deploy:
       provider: script
       skip_cleanup: true

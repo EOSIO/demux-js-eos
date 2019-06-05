@@ -20,13 +20,14 @@ const rmdirs = async (dir) => {
 }
 
 (async () => {
-  const buildItems = fs.readdirSync(process.cwd())
+  const buildItems = await readdir(process.cwd(), { withFileTypes: true })
   for (const buildItem of buildItems) {
-    if (buildItem.startsWith('index.')) {
-      fs.unlinkSync(`${process.cwd()}/${buildItem}`)
-    } else if (buildItem.match(/^v([0-9]+)+(\.[0-9]+)+(-[a-zA-Z0-9-_]+)?/g)) {
+    const fullPath = path.join(process.cwd(), buildItem.name)
+    if (buildItem.name.startsWith('index.')) {
+      await unlink(fullPath)
+    } else if (buildItem.name.match(/^v([0-9]+)+(\.[0-9]+)+(-[a-zA-Z0-9-_]+)?/g)) {
       // Matches 'v' followed by digits separated by dots followed by an optional '-tag'
-      await rmdirs(`${process.cwd()}/${buildItem}`)
+      await rmdirs(fullPath)
     }
   }
 })()

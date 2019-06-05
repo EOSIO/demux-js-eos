@@ -57,15 +57,15 @@ check_head() {
 
 check_version() {
   echo "  Checking if version of tag matches version in package.json..."
-  if ! [ "$TRAVIS_TAG" = "$(npm run current-version --silent)" ]; then
+  if ! [ "$TRAVIS_TAG" = "$(yarn current-version --silent)" ]; then
     echo "✖ Tag does not match the version in package.json!"
     echo "  - Tag: $TRAVIS_TAG"
-    echo "  - Version: $(npm run current-version --silent)"
+    echo "  - Version: $(yarn current-version --silent)"
     return 1
   fi
   echo "✔ Tag matches version in package.json"
   echo "  - Tag: $TRAVIS_TAG"
-  echo "  - Version: $(npm run current-version --silent)"
+  echo "  - Version: $(yarn current-version --silent)"
   return 0
 }
 
@@ -87,9 +87,7 @@ publish_edge() {
   update_package_json "$new_version"
   git commit -a -m "Updating version [skip ci]"
   cp .npmrc.template "$HOME"/.npmrc
-  npm publish --tag edge
-
-
+  npm publish --tag edge || return 1
   rm package.json.bak
 
   echo "✔ Published edge release"
@@ -99,7 +97,7 @@ publish_latest() {
   echo "  Publishing new release to NPM..."
 
   cp .npmrc.template "$HOME"/.npmrc
-  npm publish
+  npm publish || return 1
 
   echo "✔ Published new release"
 }
