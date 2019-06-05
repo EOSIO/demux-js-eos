@@ -87,7 +87,7 @@ publish_edge() {
   update_package_json "$new_version"
   git commit -a -m "Updating version [skip ci]"
   cp .npmrc.template "$HOME"/.npmrc
-  npm publish --tag edge --dry-run || return 1
+  npm publish --tag edge || return 1
   rm package.json.bak
 
   echo "✔ Published edge release"
@@ -97,7 +97,7 @@ publish_latest() {
   echo "  Publishing new release to NPM..."
 
   cp .npmrc.template "$HOME"/.npmrc
-  npm publish
+  npm publish || return 1
 
   echo "✔ Published new release"
 }

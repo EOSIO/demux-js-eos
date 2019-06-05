@@ -7,16 +7,12 @@ const rmdir = promisify(fs.rmdir)
 const unlink = promisify(fs.unlink)
 
 const rmdirs = async (dir) => {
-    console.log("  dir:", dir)
   let entries = await readdir(dir, { withFileTypes: true })
   for (const entry of entries) {
-    console.log("  entry:", entry)
     let fullPath = path.join(dir, entry.name)
     if (entry.isDirectory()) {
-      console.log("recursing:", fullPath)
       await rmdirs(fullPath)
     } else {
-      console.log("unlinking:", fullPath)
       await unlink(fullPath)
     }
   }
