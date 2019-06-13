@@ -79,7 +79,6 @@ describe('StateHistoryPostgresActionReader', () => {
 
   it('returns expected block', async () => {
     const returnedBlock = await reader.getBlock(2)
-    console.log("returnedBlock:", returnedBlock)
     expect(returnedBlock.blockInfo.blockNumber).toEqual(2)
     expect(returnedBlock.actions.length).toEqual(3)
   })
