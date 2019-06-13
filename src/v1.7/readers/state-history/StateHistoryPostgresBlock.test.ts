@@ -6,24 +6,24 @@ describe('StateHistoryPostgresBlock', () => {
   beforeEach(async () => {
     stateHistoryPostgresBlock = new StateHistoryPostgresBlock(
       {
-        block_num: 4,
+        block_index: 4,
         block_id: 'qwerty1234',
         previous: 'qwerty1233',
         timestamp: new Date('2018-08-12').toString(),
       },
       [{
-        act_account: 'token',
-        act_name: 'transfer',
-        action_ordinal: 1,
+        account: 'token',
+        name: 'transfer',
         transaction_id: '12345',
-        receipt_receiver: 'token',
-        producer: 'eosio',
-        authorizations: [['useraaaaaaaa', 'active']],
-        context_free: false,
+        action_index: 1,
+        parent_action_index: 0,
         data: [100, 100, 100, 100, 100, 100, 100],
-        partial_context_free_data: [],
+        receipt_global_sequence: 1,
+        receipt_receiver: 'token',
+        block_index: '4',
+        authorizations: [['useraaaaaaaa', 'active']],
+        producer: 'eosio',
       }],
-      [],
       {},
     )
     await stateHistoryPostgresBlock.parseActions()
@@ -42,19 +42,17 @@ describe('StateHistoryPostgresBlock', () => {
     const actions = [{
       payload: {
         account: 'token',
-        actionOrdinal: 1,
+        actionIndex: 1,
         authorization: [{
           actor: 'useraaaaaaaa',
           permission: 'active'
         }],
-        contextFreeData: [],
         data: {
           from: 'useraaaaaaaa',
           memo: '',
           quantity: '0.0100 EOS',
           to: 'userbbbbbbbb'
         },
-        isContextFree: false,
         isInline: false,
         isNotification: false,
         name: 'transfer',
@@ -77,21 +75,24 @@ describe('StateHistoryPostgresBlock', () => {
   it('handles blockNumber as string', async () => {
     stateHistoryPostgresBlock = new StateHistoryPostgresBlock(
       {
-        block_num: '4',
+        block_index: '4',
         block_id: 'qwerty1234',
         previous: 'qwerty1233',
         timestamp: new Date('2018-08-12').toString(),
       },
       [{
-        act_account: 'token',
-        act_name: 'transfer',
-        action_ordinal: 1,
-        transaction_id: '12345',
-        receipt_receiver: 'userbbbbbbbb',
-        authorizations: [['useraaaaaaaa', 'active']],
+        account: 'token',
+        name: 'transfer',
         data: [100, 100, 100, 100, 100, 100, 100],
+        transaction_id: '12345',
+        action_index: 1,
+        parent_action_index: 0,
+        receipt_global_sequence: 1,
+        receipt_receiver: 'userbbbbbbbb',
+        block_index: '4',
+        authorizations: [['useraaaaaaaa', 'active']],
+        producer: 'eosio',
       }],
-      [],
       {},
     )
     await stateHistoryPostgresBlock.parseActions()
