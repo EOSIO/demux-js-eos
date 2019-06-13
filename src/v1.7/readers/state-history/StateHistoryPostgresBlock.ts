@@ -26,40 +26,35 @@ const api = new Api({
   textEncoder: new TextEncoder()
 })
 
-const getApi = (massiveInstance: any, dbSchema: string, blockNumber: number) => {
+const getApi = (blockNumber: number, massiveInstance: any, dbSchema: string) => {
   const instanceAbiProvider = api.abiProvider as StateHistoryPostgresAbiProvider
-  instanceAbiProvider.massiveInstance = massiveInstance
-  instanceAbiProvider.dbSchema = dbSchema
-  instanceAbiProvider.blockNumber = blockNumber
+  instanceAbiProvider.setState(blockNumber, massiveInstance, dbSchema)
   return api
 }
 
 export class StateHistoryPostgresBlock implements Block {
   public actions: EosAction[] = []
   public blockInfo: BlockInfo
-  private contextFreeDataById: any = {}
 
   constructor(
     rawBlockInfo: any,
     private actionTraceAuthorizations: any,
-    private rawContextFreeData: any,
     private massiveInstance: any,
     private dbSchema: string = 'chain',
   ) {
     this.blockInfo = {
-      blockNumber: Number(rawBlockInfo.block_num),
+      blockNumber: Number(rawBlockInfo.block_index),
       blockHash: rawBlockInfo.block_id,
       previousBlockHash: rawBlockInfo.previous,
       timestamp: rawBlockInfo.timestamp,
     }
-    this.getContextFreeDataById()
     this.warnIfNotDistinct()
   }
 
   private defaultIgnoreActions = ['eosio::onblock']
 
   public async parseActions() {
-    const eosApi = getApi(this.massiveInstance, this.dbSchema, this.blockInfo.blockNumber)
+    const eosApi = getApi(this.blockInfo.blockNumber, this.massiveInstance, this.dbSchema)
     const filteredActionTraces = this.actionTraceAuthorizations.filter((actionTrace: any) => {
       if (this.defaultIgnoreActions.includes(`${actionTrace.act_account}::${actionTrace.act_name}`)) {
         return false
@@ -126,15 +121,15 @@ export class StateHistoryPostgresBlock implements Block {
 
   private createSerializedAction(actionTrace: any) {
     return {
-      account: actionTrace.act_account,
-      name: actionTrace.act_name,
+      account: actionTrace.account,
+      name: actionTrace.name,
       authorization: actionTrace.authorizations.map((authorization: string[]) => {
         return {
           actor: authorization[0],
           permission: authorization[1],
         }
       }),
-      data: actionTrace.act_data,
+      data: actionTrace.data,
     }
   }
 
@@ -164,20 +159,18 @@ export class StateHistoryPostgresBlock implements Block {
     }
 
     const action: EosAction = {
-      type: `${actionTrace.act_account}::${actionTrace.act_name}`,
+      type: `${actionTrace.account}::${actionTrace.name}`,
       payload: {
         account: deserializedAction.account,
         name: deserializedAction.name,
         authorization: deserializedAction.authorization,
         data: deserializedAction.data,
-        actionOrdinal: actionTrace.action_ordinal,
+        actionIndex: actionTrace.action_index,
         transactionId: actionTrace.transaction_id,
         receiver: actionTrace.receipt_receiver,
         producer: actionTrace.producer,
-        isContextFree: actionTrace.context_free,
-        isInline: actionTrace.creator_action_ordinal > 0,
-        isNotification: actionTrace.act_account !== actionTrace.receipt_receiver,
-        contextFreeData: this.contextFreeDataById[actionTrace.transaction_id] || []
+        isInline: actionTrace.parent_action_index > 0,
+        isNotification: actionTrace.account !== actionTrace.receipt_receiver,
       }
     }
 
@@ -199,32 +192,21 @@ export class StateHistoryPostgresBlock implements Block {
     for (const transactionId of Object.keys(actionsByTxId)) {
       actionsByTxId[transactionId].sort((a: EosAction, b: EosAction) => {
         // No non-null assertion disabled because database will always have an action_ordinal value
-        return a.payload.actionOrdinal! - b.payload.actionOrdinal! // tslint:disable-line
+        return a.payload.actionIndex! - b.payload.actionIndex! // tslint:disable-line
       })
       const transactionActions: TransactionActions = {
         contextFreeActions: [],
         actions: [],
         inlineActions: [],
       }
-      const contextFreeData = actionsByTxId[transactionId][0].payload.contextFreeData
       for (const action of actionsByTxId[transactionId]) {
         action.payload.transactionActions = transactionActions
-        action.payload.contextFreeData = contextFreeData
         if (action.payload.isInline) {
           transactionActions.inlineActions.push(action)
-        } else if (action.payload.isContextFree) {
-          transactionActions.contextFreeActions.push(action)
         } else {
           transactionActions.actions.push(action)
         }
       }
     }
-  }
-
-  private getContextFreeDataById() {
-    this.contextFreeDataById = this.rawContextFreeData.reduce((accumulator: any, cfd: any) => {
-      accumulator[cfd.id] = cfd.partial_context_free_data
-      return accumulator
-    }, {})
   }
 }
