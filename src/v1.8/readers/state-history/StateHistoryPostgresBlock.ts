@@ -26,11 +26,9 @@ const api = new Api({
   textEncoder: new TextEncoder()
 })
 
-const getApi = (massiveInstance: any, dbSchema: string, blockNumber: number) => {
+const getApi = (blockNumber: number, massiveInstance: any, dbSchema: string) => {
   const instanceAbiProvider = api.abiProvider as StateHistoryPostgresAbiProvider
-  instanceAbiProvider.massiveInstance = massiveInstance
-  instanceAbiProvider.dbSchema = dbSchema
-  instanceAbiProvider.blockNumber = blockNumber
+  instanceAbiProvider.setState(blockNumber, massiveInstance, dbSchema)
   return api
 }
 
@@ -59,7 +57,7 @@ export class StateHistoryPostgresBlock implements Block {
   private defaultIgnoreActions = ['eosio::onblock']
 
   public async parseActions() {
-    const eosApi = getApi(this.massiveInstance, this.dbSchema, this.blockInfo.blockNumber)
+    const eosApi = getApi(this.blockInfo.blockNumber, this.massiveInstance, this.dbSchema)
     const filteredActionTraces = this.actionTraceAuthorizations.filter((actionTrace: any) => {
       if (this.defaultIgnoreActions.includes(`${actionTrace.act_account}::${actionTrace.act_name}`)) {
         return false
