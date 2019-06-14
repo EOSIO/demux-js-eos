@@ -10,9 +10,9 @@ jest.setTimeout(30000)
 
 const docker = new Docker()
 const postgresImageName = 'postgres:10.4'
-const postgresContainerName = 'fill-pg-1.7-test'
-const postgresHostPort = 6457
-const dbName = 'statehistory17'
+const postgresContainerName = 'fill-pg-1.8-test'
+const postgresHostPort = 6458
+const dbName = 'statehistory18'
 const dbUser = 'docker'
 const dbPass = 'docker'
 const schemaName = 'b1chain'
@@ -50,9 +50,9 @@ describe('StateHistoryPostgresActionReader', () => {
       dbSchema: schemaName,
     })
     const schemaMigration = new Migration(
-      'pgfill-1.7',
+      'pgfill-1.8',
       schemaName,
-      path.join(__dirname, '../', '../', 'testHelpers', 'fillpg-schema-1.7.sql')
+      path.join(__dirname, '../', '../', 'testHelpers', 'fillpg-schema-1.8.sql')
     )
     await schemaMigration.up(massiveInstance.instance)
     await massiveInstance.reload()

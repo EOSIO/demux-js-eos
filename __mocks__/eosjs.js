@@ -16,7 +16,7 @@ class Api {
     }
     return returnVals
   }
-  get abiProvider() { return {} }
+  get abiProvider() { return { setState: () => {} } }
 }
 
 class JsonRpc {}

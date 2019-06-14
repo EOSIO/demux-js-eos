@@ -1,4 +1,4 @@
-import { AbstractActionReader, NotInitializedError } from 'demux'
+import { AbstractActionReader, Block, NotInitializedError } from 'demux'
 import massive from 'massive'
 import pgMonitor from 'pg-monitor'
 import { StateHistoryPostgresActionReaderOptions } from './interfaces'
@@ -28,7 +28,7 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
     return Number(statusRow.irreversible)
   }
 
-  public async getBlock(blockNumber: number): Promise<StateHistoryPostgresBlock> {
+  public async getBlock(blockNumber: number): Promise<Block> {
     const pgBlockInfo = await this.db.block_info.findOne({
       block_num: blockNumber,
     })
@@ -90,7 +90,10 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
       this.dbSchema,
     )
     await block.parseActions()
-    return block
+    return {
+      blockInfo: block.blockInfo,
+      actions: block.actions,
+    }
   }
 
   protected async setup(): Promise<void> {

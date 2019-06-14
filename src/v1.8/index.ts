@@ -12,4 +12,4 @@ export {
 } from '../v1.7'
 
 // export from this version if changed
-export { StateHistoryPostgresActionReader } from './handlers/state-history'
+export { StateHistoryPostgresActionReader } from './readers/state-history'

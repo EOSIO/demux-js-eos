@@ -1,4 +1,4 @@
-import { AbstractActionReader, NotInitializedError } from 'demux'
+import { AbstractActionReader, Block, NotInitializedError } from 'demux'
 import massive from 'massive'
 import pgMonitor from 'pg-monitor'
 import { StateHistoryPostgresActionReaderOptions } from './interfaces'
@@ -28,69 +28,60 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
     return Number(statusRow.irreversible)
   }
 
-  public async getBlock(blockNumber: number): Promise<StateHistoryPostgresBlock> {
+  public async getBlock(blockNumber: number): Promise<Block> {
     const pgBlockInfo = await this.db.block_info.findOne({
-      block_num: blockNumber,
+      block_index: blockNumber,
     })
 
     // Uses ${<var-name>} for JS substitutions and $<number> for massivejs substitutions.
     const actionTracesQuery = `
-      SELECT at.act_account,
-             at.act_name,
-             at.act_data,
+      SELECT at.account,
+             at.name,
+             at.data,
              at.transaction_id,
-             at.action_ordinal,
-             at.creator_action_ordinal,
+             at.action_index,
+             at.parent_action_index,
              at.receipt_global_sequence,
-             at.context_free,
              at.receipt_receiver,
-             at.block_num,
+             at.block_index,
              array_agg( '[' || at_authorization.actor || ',' || at_authorization.permission || ']') as authorizations,
              bi.producer
       FROM ${this.dbSchema}.action_trace AS at,
            ${this.dbSchema}.action_trace_authorization AS at_authorization,
            ${this.dbSchema}.block_info as bi
-      WHERE at.receipt_present = true AND
-            at.block_num = $1 AND
+      WHERE at.block_index = $1 AND
             at.transaction_id = at_authorization.transaction_id AND
-            bi.block_num = at.block_num
-      GROUP BY at.act_account,
-               at.act_name,
-               at.act_data,
+            bi.block_index = at.block_index
+      GROUP BY at.account,
+               at.name,
+               at.data,
                at.transaction_id,
-               at.action_ordinal,
-               at.creator_action_ordinal,
+               at.action_index,
+               at.parent_action_index,
                at.receipt_global_sequence,
-               at.context_free,
                at.receipt_receiver,
-               at.block_num,
+               at.block_index,
                bi.producer
       ORDER BY at.receipt_global_sequence
     `
-    const contextFreeDataQuery = `
-      SELECT tt.partial_context_free_data, tt.id
-      FROM ${this.dbSchema}.transaction_trace as tt
-      WHERE tt.block_num = $1
-    `
+
     if (!this.massiveInstance) {
       throw new NotInitializedError('Massive was not initialized.')
     }
 
-    const pgActionTraceAuthorizationsPromise = this.massiveInstance.query(actionTracesQuery, [blockNumber])
-    const pgContextFreeDataPromise = this.massiveInstance.query(contextFreeDataQuery, [blockNumber])
-    const [pgActionTraceAuthorizations, pgContextFreeData] = await Promise.all(
-      [pgActionTraceAuthorizationsPromise, pgContextFreeDataPromise]
-    )
+    const pgActionTraceAuthorizations = await this.massiveInstance.query(actionTracesQuery, [blockNumber])
 
     const block = new StateHistoryPostgresBlock(
       pgBlockInfo,
       pgActionTraceAuthorizations,
-      pgContextFreeData,
       this.massiveInstance,
       this.dbSchema,
     )
     await block.parseActions()
-    return block
+    return {
+      actions: block.actions,
+      blockInfo: block.blockInfo,
+    }
   }
 
   protected async setup(): Promise<void> {

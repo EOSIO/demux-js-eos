@@ -17,6 +17,7 @@
   "devDependencies": {
     "@blockone/tslint-config-blockone": "^4.0.0",
     "@types/bunyan": "^1.8.6",
+    "@types/dockerode": "^2.5.18",
     "@types/jest": "23.3.13",
     "@types/massive": "^5.4.1",
     "@types/mongodb": "^3.1.4",
@@ -35,6 +36,7 @@
     "bunyan": "^1.8.12",
     "demux": "^5.0.2-500",
     "demux-postgres": "^5.0.2-284",
+    "dockerode": "^2.5.8",
     "eosjs": "20.0.0-b06ca22.0",
     "massive": "5.11.0",
     "mongodb": "^3.1.3",
