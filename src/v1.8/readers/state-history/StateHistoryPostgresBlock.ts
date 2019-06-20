@@ -1,3 +1,4 @@
+import * as Logger from 'bunyan'
 import { Block, BlockInfo } from 'demux'
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
@@ -26,9 +27,9 @@ const api = new Api({
   textEncoder: new TextEncoder()
 })
 
-const getApi = (blockNumber: number, massiveInstance: any, dbSchema: string) => {
+const getApi = (blockNumber: number, massiveInstance: any, dbSchema: string, log: Logger) => {
   const instanceAbiProvider = api.abiProvider as StateHistoryPostgresAbiProvider
-  instanceAbiProvider.setState(blockNumber, massiveInstance, dbSchema)
+  instanceAbiProvider.setState(blockNumber, massiveInstance, dbSchema, log)
   return api
 }
 
@@ -43,6 +44,7 @@ export class StateHistoryPostgresBlock implements Block {
     private rawContextFreeData: any,
     private massiveInstance: any,
     private dbSchema: string = 'chain',
+    private log: Logger,
   ) {
     this.blockInfo = {
       blockNumber: Number(rawBlockInfo.block_num),
@@ -57,7 +59,7 @@ export class StateHistoryPostgresBlock implements Block {
   private defaultIgnoreActions = ['eosio::onblock']
 
   public async parseActions() {
-    const eosApi = getApi(this.blockInfo.blockNumber, this.massiveInstance, this.dbSchema)
+    const eosApi = getApi(this.blockInfo.blockNumber, this.massiveInstance, this.dbSchema, this.log)
     const filteredActionTraces = this.actionTraceAuthorizations.filter((actionTrace: any) => {
       if (this.defaultIgnoreActions.includes(`${actionTrace.act_account}::${actionTrace.act_name}`)) {
         return false
@@ -88,7 +90,7 @@ export class StateHistoryPostgresBlock implements Block {
       ...new Set(this.actionTraceAuthorizations.map((action: any) => action.receipt_global_sequence))
     ]
     if (!(globalSequences.length === this.actionTraceAuthorizations.length)) {
-      console.warn(`Global action traces are not distinct. Block number: ${this.blockInfo.blockNumber}`)
+      console.warn(`Global action traces are not distinct (block number ${this.blockInfo.blockNumber})`)
     }
   }
 
