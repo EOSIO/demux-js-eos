@@ -1,4 +1,5 @@
 import { TestActionHandler } from '../../testHelpers/TestActionHandler'
+import { Database } from 'massive'
 
 describe('MassiveEosActionHandler', () => {
   let actionHandler: TestActionHandler
@@ -10,7 +11,9 @@ describe('MassiveEosActionHandler', () => {
         updaters: [],
         effects: []
       }],
-      {}
+      {} as Database,
+      [],
+      { logLevel: 'error' }
     )
   })
 
