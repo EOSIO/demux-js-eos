@@ -1,11 +1,14 @@
+import * as Logger from 'bunyan'
 import { nodeosRawBlock } from '../../testHelpers/nodeosRawBlock'
 import { NodeosBlock } from './NodeosBlock'
+
+const log = Logger.createLogger({ name: 'NodeosBlockTest', level: 'error' })
 
 describe('NodeosBlock', () => {
   let eosBlock: NodeosBlock
 
   beforeEach(() => {
-    eosBlock = new NodeosBlock(nodeosRawBlock)
+    eosBlock = new NodeosBlock(nodeosRawBlock, log)
   })
 
   it('collects actions from blocks', async () => {
