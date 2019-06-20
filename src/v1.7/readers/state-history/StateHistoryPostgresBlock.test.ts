@@ -1,4 +1,7 @@
+import * as Logger from 'bunyan'
 import { StateHistoryPostgresBlock } from './StateHistoryPostgresBlock'
+
+const log = Logger.createLogger({ name: 'StateHistoryPostgresBlockTest', level: 'debug' })
 
 describe('StateHistoryPostgresBlock', () => {
   let stateHistoryPostgresBlock: any
@@ -25,6 +28,8 @@ describe('StateHistoryPostgresBlock', () => {
         producer: 'eosio',
       }],
       {},
+      'myschema',
+      log,
     )
     await stateHistoryPostgresBlock.parseActions()
   })
@@ -94,6 +99,8 @@ describe('StateHistoryPostgresBlock', () => {
         producer: 'eosio',
       }],
       {},
+      'myschema',
+      log,
     )
     await stateHistoryPostgresBlock.parseActions()
 

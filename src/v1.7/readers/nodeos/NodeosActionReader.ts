@@ -53,6 +53,7 @@ export class NodeosActionReader extends AbstractActionReader {
 
       return irreversibleBlockNum
     } catch (err) {
+      this.log.error(err)
       throw new RetrieveIrreversibleBlockError()
     }
   }
@@ -67,11 +68,12 @@ export class NodeosActionReader extends AbstractActionReader {
           url: `${this.nodeosEndpoint}/v1/chain/get_block`,
           json: { block_num_or_id: blockNumber },
         })
-        return new NodeosBlock(rawBlock)
+        return new NodeosBlock(rawBlock, this.log)
       }, numRetries, waitTimeMs)
 
       return block
     } catch (err) {
+      this.log.error(err)
       throw new RetrieveBlockError()
     }
   }

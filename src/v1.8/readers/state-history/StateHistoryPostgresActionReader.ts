@@ -88,6 +88,7 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
       pgContextFreeData,
       this.massiveInstance,
       this.dbSchema,
+      this.log,
     )
     await block.parseActions()
     return {

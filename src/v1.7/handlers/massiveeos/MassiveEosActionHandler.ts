@@ -1,16 +1,16 @@
 import { HandlerVersion } from 'demux'
 import { massive } from 'demux-postgres'
-import { MassiveActionHandler, MigrationSequence } from 'demux-postgres'
+import { MassiveActionHandler, MigrationSequence, MassiveActionHandlerOptions } from 'demux-postgres'
 import { EosPayload } from '../../interfaces'
 
 export class MassiveEosActionHandler extends MassiveActionHandler {
   constructor(
     protected handlerVersions: HandlerVersion[],
     protected massiveInstance: massive.Database,
-    protected dbSchema: string = 'public',
     protected migrationSequences: MigrationSequence[] = [],
+    options: MassiveActionHandlerOptions,
   ) {
-    super(handlerVersions, massiveInstance, dbSchema, migrationSequences)
+    super(handlerVersions, massiveInstance, migrationSequences, options)
     this.validateHandlerVersions(handlerVersions)
   }
 

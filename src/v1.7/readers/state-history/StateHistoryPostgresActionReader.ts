@@ -76,6 +76,7 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
       pgActionTraceAuthorizations,
       this.massiveInstance,
       this.dbSchema,
+      this.log,
     )
     await block.parseActions()
     return {
