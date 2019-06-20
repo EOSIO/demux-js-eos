@@ -34,8 +34,8 @@
   "dependencies": {
     "@types/express": "^4.16.1",
     "bunyan": "^1.8.12",
-    "demux": "^5.0.2-500",
-    "demux-postgres": "^5.0.2-284",
+    "demux": "5.0.2-533",
+    "demux-postgres": "5.0.2-296",
     "dockerode": "^2.5.8",
     "eosjs": "20.0.0-b06ca22.0",
     "massive": "5.11.0",
@@ -46,7 +46,7 @@
     "request-promise-native": "^1.0.5"
   },
   "peerDependencies": {
-    "demux": "^5.0.0"
+    "demux": "5.0.2-533"
   },
   "resolutions": {
     "*/merge": "1.2.1"
