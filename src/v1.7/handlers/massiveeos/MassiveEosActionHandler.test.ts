@@ -25,6 +25,7 @@ describe('MassiveEosActionHandler', () => {
       'contract::action>notified',
       'contract::action>*',
       '*::*>*',
+      'hasa.dot::action'
     ]
 
     const shouldFail = [
@@ -38,6 +39,13 @@ describe('MassiveEosActionHandler', () => {
       'blank::>action',
       'asterisks::**',
       'asterisks2::*abc',
+      'has..two::dots',
+      'has.two.dots::separated',
+      '.startswith::dot',
+      'endswith.::dot',
+      'dotwith.*::asterisk',
+      '*.dotwith::asterisk',
+      '*.*::2astwithdot',
     ]
 
     it('all passes validation', () => {
