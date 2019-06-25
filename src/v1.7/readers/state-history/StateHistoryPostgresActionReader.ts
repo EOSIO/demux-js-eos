@@ -96,8 +96,20 @@ export class StateHistoryPostgresActionReader extends AbstractActionReader {
         await pgMonitor.attach(this.massiveInstance.driverConfig)
       }
       this.db = this.massiveInstance[this.dbSchema]
+      await this.addDbIndex('action_trace', 'transaction_id', 'transaction_id_idx1')
+      await this.addDbIndex('action_trace_authorization', 'transaction_id', 'transaction_id_idx2')
     } catch (err) {
       throw new NotInitializedError('', err)
+    }
+  }
+
+  protected async addDbIndex(tableName: string, columnName: string, indexName: string = `${columnName}_idx`) {
+    if (this.massiveInstance) {
+      await this.massiveInstance.query(`
+        CREATE INDEX IF NOT EXISTS ${indexName} ON ${this.dbSchema}.${tableName} (${columnName})
+      `)
+    } else {
+      throw Error('this.massiveInstance should already be set.')
     }
   }
 }
