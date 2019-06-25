@@ -66,7 +66,15 @@ export class MassiveEosActionHandler extends MassiveActionHandler {
    * @param actionType
    */
   protected validateActionType(actionType: string) {
-    const validationRegex = /^([a-z12345]{1,12}|\*)::([a-z12345]{1,12}|\*)(>([a-z12345]{1,12}|\*))?$/g
+                         // 1 to 12 characters with a possible '.' in the middle, or '*'
+    const matchPattern = '^((?=.{1,12}:)([a-z12345]+\\.?[a-z12345]+)|\\*)' +
+                         // Delimiter
+                         '::' +
+                         // 1 to 12 characters, or '*'
+                         '([a-z12345]{1,12}|\\*)' +
+                         // (Optional) '>' followed by: 1 to 12 characters, or '*'
+                         '(>([a-z12345]{1,12}|\\*))?$'
+    const validationRegex = new RegExp(matchPattern)
     return !!actionType.match(validationRegex)
   }
 }
