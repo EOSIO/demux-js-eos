@@ -48,8 +48,8 @@ export class StateHistoryPostgresBlock implements Block {
   ) {
     this.blockInfo = {
       blockNumber: Number(rawBlockInfo.block_num),
-      blockHash: rawBlockInfo.block_id,
-      previousBlockHash: rawBlockInfo.previous,
+      blockHash: rawBlockInfo.block_id.toLowerCase(),
+      previousBlockHash: rawBlockInfo.previous.toLowerCase(),
       timestamp: rawBlockInfo.timestamp,
     }
     this.getContextFreeDataById()
