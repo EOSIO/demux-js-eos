@@ -19,7 +19,7 @@ This library provides three Action Reader implementations for reading from EOSIO
 
 ### MongoActionReader
 
-Reads from a node's attached MongoDB instance when configured to use the MonogoDB Plugin.
+Reads from a node's attached MongoDB instance when configured to use the MongoDB Plugin.
 
 #### Setup
 
