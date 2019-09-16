@@ -15,11 +15,27 @@ npm install demux-eos --save
 
 ## Usage
 
-This library provides three Action Reader implementations for reading from EOSIO blockchains: `NodeosActionReader`, `MongoActionReader`, and `StateHistoryPostgresActionReader`. **It is currently recomended to use the `MongoActionReader` due to performance and the ability to read inline and deferred actions.**  
+This library provides three Action Reader implementations for reading from EOSIO blockchains: `NodeosActionReader`, `MongoActionReader`, and `StateHistoryPostgresActionReader`. **It is currently recommended to use the `StateHistoryPostgresActionReader`.**  
+
+### Importing by Version
+
+This library supports multiple versions of EOSIO. The currently supported versions as `v1.7` and `v1.8`. To import compatible classes for a specific version, imports must follow the following format:
+
+```typescript
+import { <class here> } from 'demux-eos/<version here>'
+```
+
+For example,
+
+```typescript
+import { StateHistoryPostgresActionReader } from 'demux-eos/v1.8'
+```
+
+## Readers
 
 ### MongoActionReader
 
-Reads from a node's attached MongoDB instance when configured to use the MongoDB Plugin.
+Reads from a node's attached MongoDB instance when configured to use the MonogoDB Plugin.
 
 #### Setup
 
@@ -49,7 +65,7 @@ Unlike the `NodeosActionReader`, inline and deferred actions are able to be capt
 
 ```javascript
 const { BaseActionWatcher } = require("demux")
-const { MongoActionReader } = require("demux-eos")
+const { MongoActionReader } = require("demux-eos/v1.8")
 
 // See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
 const actionHandler = ...
@@ -104,7 +120,7 @@ Unlike the `NodeosActionReader`, inline and deferred actions are able to be capt
 
 ```javascript
 const { BaseActionWatcher } = require("demux")
-const { StateHistoryPostgresActionReader } = require("demux-eos")
+const { StateHistoryPostgresActionReader } = require("demux-eos/1.8")
 
 // See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
 const actionHandler = ...
@@ -145,7 +161,7 @@ All that is required is a running Nodeos instance that has the `chain_api_plugin
 
 ```javascript
 const { BaseActionWatcher } = require("demux")
-const { NodeosActionReader } = require("demux-eos")
+const { NodeosActionReader } = require("demux-eos/1.8")
 
 // See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
 const actionHandler = ...
