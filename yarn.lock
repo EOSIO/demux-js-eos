@@ -1176,10 +1176,10 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-demux-postgres@5.0.2-296:
-  version "5.0.2-296"
-  resolved "https://registry.yarnpkg.com/demux-postgres/-/demux-postgres-5.0.2-296.tgz#e1b0b0fc91d6064e7e062b148a2ad1fb56689efe"
-  integrity sha512-MkzmLnV0QQ9eryeIwlZ30DT79K9PRHJevcjaqFa42S0PCINX7E+iyzleMAmFSWerq+73N8XxK5v2En3K35MaQg==
+demux-postgres@^5.0.2-303:
+  version "5.0.2-303"
+  resolved "https://registry.yarnpkg.com/demux-postgres/-/demux-postgres-5.0.2-303.tgz#848888bce8546010d25c9d89c2e240bb1e01a75f"
+  integrity sha512-h81c2BdwZJwKFvNkOKXA3aIejQ+CqzDqmv+K+aSX8zyeQt6HO0kCLhscssWSpAuorE31OcC7gJgeqyfrVGWtkw==
   dependencies:
     "@types/express" "^4.16.1"
     demux "5.0.2-533"
