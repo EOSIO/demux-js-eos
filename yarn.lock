@@ -1176,19 +1176,19 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-demux-postgres@^5.0.2-303:
-  version "5.0.2-303"
-  resolved "https://registry.yarnpkg.com/demux-postgres/-/demux-postgres-5.0.2-303.tgz#848888bce8546010d25c9d89c2e240bb1e01a75f"
-  integrity sha512-h81c2BdwZJwKFvNkOKXA3aIejQ+CqzDqmv+K+aSX8zyeQt6HO0kCLhscssWSpAuorE31OcC7gJgeqyfrVGWtkw==
+demux-postgres@5.0.2-318:
+  version "5.0.2-318"
+  resolved "https://registry.yarnpkg.com/demux-postgres/-/demux-postgres-5.0.2-318.tgz#b1cc0b5103b83a4a7229d6ecb645b354e767a9df"
+  integrity sha512-U4DuNROQ1VtoNcTAsYy9ee07FlPIXg6FmBmM1UFmzOKmxmMzEhsj8rQDyDNCmoBbOj8zelcTUpdr5I7QTC9/JQ==
   dependencies:
     "@types/express" "^4.16.1"
-    demux "5.0.2-533"
+    demux "5.0.2-572"
     massive "5.11.0"
 
-demux@5.0.2-533:
-  version "5.0.2-533"
-  resolved "https://registry.yarnpkg.com/demux/-/demux-5.0.2-533.tgz#181c997eef688b30b17e09e45d6114d4863a8e2e"
-  integrity sha512-FnPE7rlVmYePOrAAtrBR2NUZ0bPu75SrPBgKdeckBnvA6XmMelVYuH+LArv15Bo5Df7DZb9YVePwH3gjriGcyQ==
+demux@5.0.2-572:
+  version "5.0.2-572"
+  resolved "https://registry.yarnpkg.com/demux/-/demux-5.0.2-572.tgz#03248cbb255da67b6d60c6ce0560584ce1efda0a"
+  integrity sha512-5TN92DasjUWacED+OqaT9fDUvHPQ0jVu4OeWawUq1DRcLOJpCVtU+9UeTcNtMAkHqCmqA6Pd+PyuULzCoinJZQ==
   dependencies:
     bunyan "1.8.12"
     express "4.16.4"
