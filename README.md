@@ -77,7 +77,7 @@ const actionReader = new MongoActionReader({
   mongoEndpoint: "mongo://...",    // mongoEndpoint: the url of the mongodb instance
 })
 
-const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
+const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, { pollInterval: 500 })
 
 // This must be done before calling watch so the MongoDB connection can be made
 actionReader.initialize().then(() =>
@@ -87,7 +87,7 @@ actionReader.initialize().then(() =>
 
 ### StateHistoryPostgresActionReader
 
-Reads from a Postgres instance when nodeos is configured to use the State History Plugin as well as the [fill-postgresql](https://github.com/EOSIO/fill-postgresql) tool.
+Reads from a Postgres instance when nodeos is configured to use the State History Plugin as well as the [history-tools](https://github.com/EOSIO/history-tools) tool.
 
 #### Setup
 
@@ -104,11 +104,11 @@ To use the `StateHistoryPostgresActionReader`, you must first make sure that you
   - `--chain-state-history` set via CLI.
   - `--state-history-endpoint \"0.0.0.0:<preferred_port>\"` set via CLI.
 
-- You are running fill-postgresql.
-  - `--endpoint=<ip_of_above_node:port_specified>` set via CLI.
-  - `--schema=<preferred_schema>` set via CLI.
-  - `--drop` set via CLI. This will cleanup any existing tables.
-  - `--create` set via CLI. This will create the schema/tables as needed.
+- You are running history-tools.
+  - `--fill-connect-to=<ip_of_above_node:port_specified>` set via CLI.
+  - `--pg-schema=<preferred_schema>` set via CLI.
+  - `--fpg-drop` set via CLI. This will cleanup any existing tables.
+  - `--fpg-create` set via CLI. This will create the schema/tables as needed.
 
 This means that in a development environment, you will need to set up at least two Nodeos instances: one to produce blocks, and a peer with the State History plugin activated to populate the Postgresql instance.
 
@@ -120,7 +120,7 @@ Unlike the `NodeosActionReader`, inline and deferred actions are able to be capt
 
 ```javascript
 const { BaseActionWatcher } = require("demux")
-const { StateHistoryPostgresActionReader } = require("demux-eos/1.8")
+const { StateHistoryPostgresActionReader } = require("demux-eos/v1.8")
 
 // See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
 const actionHandler = ...
@@ -128,7 +128,7 @@ const actionHandler = ...
 const massiveConfig = {
   host: 'localhost',
   port: 5432,
-  database: 'chain',
+  database: 'postgres',
   user: 'postgres',
   password: 'postgres'
 }
@@ -136,13 +136,13 @@ const massiveConfig = {
 const actionReader = new StateHistoryPostgresActionReader({
   startAtBlock: 1234,              // startAtBlock: the first block relevant to our application
   onlyIrreversible: false,         // onlyIrreversible: whether or not to only process irreversible blocks
-  dbSchema: "chain",               // name of the database
+  dbSchema: "chain",               // name of the database schema
   massiveConfig,                   // provides config to internal massivejs instance.
 })
 
-const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
+const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, { pollInterval: 500 })
 
-// This must be done before calling watch so the MongoDB connection can be made
+// This must be done before calling watch so the PostgreSQL connection can be made
 actionReader.initialize().then(() =>
   actionWatcher.watch()
 )
@@ -161,7 +161,7 @@ All that is required is a running Nodeos instance that has the `chain_api_plugin
 
 ```javascript
 const { BaseActionWatcher } = require("demux")
-const { NodeosActionReader } = require("demux-eos/1.8")
+const { NodeosActionReader } = require("demux-eos/v1.8")
 
 // See supported Action Handlers here: https://github.com/EOSIO/demux-js#class-implementations
 const actionHandler = ...
@@ -169,10 +169,10 @@ const actionHandler = ...
 const actionReader = new NodeosActionReader({
   startAtBlock: 1234,             // startAtBlock: the first block relevant to our application
   onlyIrreversible: false,        // onlyIrreversible: whether or not to only process irreversible blocks
-  nodeosEndpoint: "http://...",   // mongoEndpoint: the url of the Nodeos API
+  nodeosEndpoint: "http://...",   // nodeosEndpoint: the url of the Nodeos API
 })
 
-const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
+const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, { pollInterval: 500 })
 
 actionWatcher.watch()
 ```
