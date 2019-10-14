@@ -87,7 +87,7 @@ actionReader.initialize().then(() =>
 
 ### StateHistoryPostgresActionReader
 
-Reads from a Postgres instance when nodeos is configured to use the State History Plugin as well as the [history-tools](https://github.com/EOSIO/history-tools) tool.
+Reads from a Postgres instance when nodeos is configured to use the State History Plugin as well as the [history-tools](https://github.com/EOSIO/history-tools).
 
 #### Setup
 
