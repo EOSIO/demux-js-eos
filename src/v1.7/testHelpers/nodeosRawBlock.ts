@@ -72,4 +72,4 @@ export const nodeosRawBlock = {
   id: '000f4241873a9aef0daefd47d8821495b6f61c4d1c73544419eb0ddc22a9e906',
   block_num: 20,
   ref_block_prefix: 1207807501,
-}
+} as any

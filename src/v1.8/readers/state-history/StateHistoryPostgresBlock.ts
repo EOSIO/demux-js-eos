@@ -23,8 +23,8 @@ const api = new Api({
   rpc,
   abiProvider,
   signatureProvider,
-  textDecoder: new TextDecoder(),
-  textEncoder: new TextEncoder()
+  textDecoder: new TextDecoder() as any,
+  textEncoder: new TextEncoder() as any
 })
 
 const getApi = (blockNumber: number, massiveInstance: any, dbSchema: string, log: Logger) => {
