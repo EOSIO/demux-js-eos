@@ -9,11 +9,11 @@ describe('NodeosActionReader', () => {
   const blockInfo = {
     last_irreversible_block_num: 10,
     head_block_num: 20,
-  }
+  } as any
 
   beforeAll(() => {
-    request.get = jest.fn(async () => blockInfo)
-    request.post = jest.fn(async () => nodeosRawBlock)
+    request.get = jest.fn(async () => blockInfo) as any
+    request.post = jest.fn(async () => nodeosRawBlock) as any
   })
 
   beforeEach(() => {
@@ -40,7 +40,7 @@ describe('NodeosActionReader', () => {
   })
 
   it('throws if not correctly initialized', async () => {
-    request.get = jest.fn(async () => { throw new Error('404: This page does not exist') })
+    request.get = jest.fn(async () => { throw new Error('404: This page does not exist') }) as any
     reader.getLastIrreversibleBlockNumber = jest.fn(() => blockInfo)
     const result = reader.getNextBlock()
     await expect(result).rejects.toThrow(NotInitializedError)

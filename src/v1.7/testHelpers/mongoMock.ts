@@ -63,4 +63,4 @@ export const mockConnect = {
       }
     }
   },
-}
+} as any
