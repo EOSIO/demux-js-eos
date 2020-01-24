@@ -55,7 +55,7 @@
   "scripts": {
     "build": "yarn rm-build && tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "jest",
+    "test": "yarn jest",
     "rm-build": "node ./scripts/rm-build.js",
     "build-docs": "./scripts/build-docs.sh",
     "current-version": "echo $npm_package_version",
