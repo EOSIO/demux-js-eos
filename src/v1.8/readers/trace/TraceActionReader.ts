@@ -2,11 +2,11 @@ import { NodeosActionReader } from '../../../v1.7/readers/nodeos/NodeosActionRea
 import { retry } from '../../../v1.7/utils'
 import request from 'request-promise-native'
 import { RetrieveBlockError } from '../../../v1.7/errors'
-import { TraceActionReaderOptions } from './interfaces'
+import { NodeosActionReaderOptions } from '../../../v1.7/interfaces'
 import { TraceBlock } from './TraceBlock'
 
 export class TraceActionReader extends NodeosActionReader {
-  constructor(options: TraceActionReaderOptions) {
+  constructor(options: NodeosActionReaderOptions) {
     super(options)
   }
 

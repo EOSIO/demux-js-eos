@@ -8,9 +8,9 @@ export class TraceBlock extends NodeosBlock {
     this.blockInfo.previousBlockHash = rawBlock.previous_id
     //
     const producer = rawBlock.producer
-    return this.flattenArray(rawBlock.transactions.map((transaction: any, index: number) => {
-        return transaction.actions.map((action: any, actionIndex: number) => {
-        if (typeof action.data === "string") {
+    return this.flattenArray(rawBlock.transactions.map((transaction: any, _: number) => {
+      return transaction.actions.map((action: any, actionIndex: number) => {
+        if (typeof action.data === 'string') {
           // TODO: action data deserialization when abi is provided
         }
         const block = {
