@@ -3,14 +3,15 @@ import { EosAction } from '../../../v1.7/interfaces'
 
 export class TraceBlock extends NodeosBlock {
   protected collectActionsFromBlock(rawBlock: any): EosAction[] {
+    // workaround fix
+    this.blockInfo.blockNumber = rawBlock.number
+    this.blockInfo.previousBlockHash = rawBlock.previous_id
+    //
     const producer = rawBlock.producer
     return this.flattenArray(rawBlock.transactions.map((transaction: any, index: number) => {
-        return transaction.trx.transaction.actions.map((action: any, actionIndex: number) => {
+        return transaction.actions.map((action: any, actionIndex: number) => {
         if (typeof action.data === "string") {
-          this.log.warn(
-            `Action data for '${action.receiver}::${action.action}' not deserialized ` +
-            `(block ${this.blockInfo.blockNumber}, transaction index ${index}, action index ${actionIndex})`
-          )
+          // TODO: action data deserialization when abi is provided
         }
         const block = {
           type: `${action.receiver}::${action.action}`,
