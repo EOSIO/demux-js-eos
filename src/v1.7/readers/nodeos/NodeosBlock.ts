@@ -7,7 +7,7 @@ export class NodeosBlock implements Block {
   public blockInfo: BlockInfo
   constructor(
     rawBlock: any,
-    private log: Logger
+    protected log: Logger
   ) {
     this.blockInfo = {
       blockNumber: rawBlock.block_num,
@@ -51,7 +51,7 @@ export class NodeosBlock implements Block {
     }))
   }
 
-  private flattenArray(arr: any[]): any[] {
+  protected flattenArray(arr: any[]): any[] {
     return arr.reduce((flat, toFlatten) =>
       flat.concat(Array.isArray(toFlatten) ? this.flattenArray(toFlatten) : toFlatten), [])
   }

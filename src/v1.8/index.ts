@@ -13,3 +13,4 @@ export {
 
 // export from this version if changed
 export { StateHistoryPostgresActionReader } from './readers/state-history'
+export { TraceActionReader } from './readers/trace'
