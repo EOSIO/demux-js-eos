@@ -40,7 +40,7 @@
     "eosjs": "20.0.0-b06ca22.0",
     "massive": "6.1.4",
     "mongodb": "3.1.13",
-    "node-fetch": "2.3.0",
+    "node-fetch": "3.1.1",
     "pg-monitor": "1.1.0",
     "request": "2.87.0",
     "request-promise-native": "1.0.5"
